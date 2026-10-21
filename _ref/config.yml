@@ -1,0 +1,460 @@
+# Here are the valid colors for the "potionColor" options for the 1.11+ version
+# RED
+# BLUE
+# AQUA
+# BLACK
+# FUCHSIA
+# GRAY
+# GREEN
+# LIME
+# MAROON
+# NAVY
+# OLIVE
+# ORANGE
+# PURPLE
+# SILVER
+# TEAL
+# WHITE
+# YELLOW
+
+# Here are the valid colors for the "potionColor" options for the 1.8 version
+# LIGHT_BLUE
+# BLUE
+# DARK_BLUE
+# MAGENTA
+# ORANGE
+# GREEN
+# PINK
+# LIGHT_PURPLE
+# PURPLE
+# DARK_PURPLE
+# AQUA
+# GRAY
+
+# Set this to false if you don't want to get an alert when there is a new update
+updateAlerts: false
+
+# This number is how many seconds the confusion effect lasts when a player loses a drink.
+# Set to 0 to disable.
+drunkEffect: 3
+
+# This number is how many seconds the blindness effect lasts when a player loses a drink.
+# Set to 0 to disable.
+blindnessEffect: 3
+
+# Set this to true if you want the GambleBar cooldown to apply to each drink individually
+# Leave it as false if you want the cooldown to apply to ANY/ALL drinks the same.
+individualCooldown: false
+
+# This number is how many seconds the cooldown is between a player consuming a GambleBar drink
+cooldownSeconds: 0
+
+# Set this to false to disable sound effects
+# If using 1.8.x server, view sound options here: https://helpch.at/docs/1.8.8/org/bukkit/Sound.html
+# If using a 1.11+ server, view sound options here (Note, not all will work depending on your server version): https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
+soundEnabled: true
+
+# This is the sound that plays if the player has a super lucky win on a drink
+superWinSound: ENTITY_PLAYER_LEVELUP
+
+# This is the sound that plays if the player wins a drink
+winSound: ENTITY_PLAYER_LEVELUP
+
+# This is the sound that plays if the player loses a drink
+loseSound: ENTITY_PLAYER_HURT
+
+# This is a list of worlds that drinking a GambleBar potion will not work in
+blacklistWorlds:
+- "world_nether"
+- "test_world"
+
+# Set this to true if you want bars to auto-close after drink purchase.
+autoCloseBar: true
+
+# This is the default economy plugin bars will use unless specified in the bar's configuration
+# Options: Vault, PlayerPoints
+defaultEconomy: Vault
+
+# The default bar is the bar opened when a player just uses "/bar"
+defaultBar: mainBar
+
+# Everything after this is the information for the bars
+# Format:
+# bars:
+#   <barID>:
+#     title: "Title of the Bar Inventory"
+#     size: 9 (This number must be a multiple of 9. Minimum is 9, Maximum is 54)
+#     economyType: "Vault" (Current options are Vault and PlayerPoints. If not specified, it will use the defaultEconomy)
+#     inventory:
+#       inventorySlotNumber:
+#         name: "Name of the drink"
+#         lore:
+#         - "This is the drink's lore"
+#         - "Lore Lore"
+#         customModelData: 1 (Ignore if not using custom model data. Custom Model Data will override drink color.)
+#         potionColor: BLUE (Check available colors in the beginning of this file)
+#         price: 500 (Price of the drink, must be an integer)
+#         reward: 1000 (Reward from winning the drink)
+#         superLuckyReward: 2000 (Super lucky reward from winning the drink)
+#         odds: 50.00 (% Odds of winning the drink. Must be a decimal number (double))
+#         superLuckyOdds: 5.00 (% Odds of getting a super lucky win of the drink. Must be a decimal number (double))
+#         rewardCommands:
+#         - "Command to run from console when the player wins a drink"
+#         - "%player% = players name and %reward% is the amount of money they won"
+#         superLuckyRewardCommands:
+#         - "broadcast &c%player% &fgot very lucky and won &c$%reward% &ffrom the GambleBar!"
+bars:
+  mainBar:
+    title: "&8&lMenu &8| Parieur"
+    size: 45
+    economyType: Vault
+    inventory:
+      0:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 15
+      1:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 14
+      2:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 15
+      3:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 14
+      4:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 15
+      5:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 14
+      6:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 15
+      7:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 14
+      8:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 15
+      9:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 14
+      10:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 7
+      11:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 7
+      12:
+        name: "&6Coca"
+        lore:
+        - ""
+        - "&8&l« &7Achetez un &6Coca &7pour"
+        - "&6500 SHCoins &7et tentez de"
+        - "&7gagner &6le double &7en le buvant &8&l»"
+        - ""
+        - "&8• &fChance: &650%"
+        - "&8• &fPrix: &6500 SHCoins"
+        - "&8• &fRécompense: &61,000 SHCoins"
+        - ""
+        - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+        customModelData: 1
+        potionColor: MAROON
+        price: 500
+        reward: 1000
+        odds: 50.00
+        rewardCommands:
+        - "execute at %player% run particle minecraft:happy_villager ~ ~1.1 ~0.09 0.5 0.6 0.5 0.1 100"
+        - "sm %player% &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+      13:
+        name: "&ePastis"
+        lore:
+        - ""
+        - "&8&l« &7Achetez un &ePastis &7pour"
+        - "&e2,500 SHCoins &7et tentez de"
+        - "&7gagner &ele double &7en le buvant &8&l»"
+        - ""
+        - "&8• &fChance: &e49%"
+        - "&8• &fPrix: &e2,500 SHCoins"
+        - "&8• &fRécompense: &e5,000 SHCoins"
+        - ""
+        - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+        customModelData: 2
+        potionColor: YELLOW
+        price: 2500
+        reward: 5000
+        odds: 49.00
+        rewardCommands:
+        - "execute at %player% run particle minecraft:happy_villager ~ ~1.1 ~0.09 0.5 0.6 0.5 0.1 100"
+        - "sm %player% &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+      14:
+        name: "&#39EE86J&#35D768ä&#32C049g&#2EA92Be&#2A920Cr"
+        lore:
+        - ""
+        - "&8&l« &7Achetez du &#39EE86J&#38E67Bä&#36DD70g&#35D565e&#34CD5Ar&#32C44Fm&#31BC43e&#2FB338i&#2EAB2Ds&#2DA322t&#2B9A17e&#2A920Cr &7pour"
+        - "&#39EE867&#38E67C,&#37DF725&#35D7680&#34CF5D0 &#32C049S&#30B83FH&#2FB135C&#2EA92Bo&#2DA120i&#2B9A16n&#2A920Cs &7et tentez de"
+        - "&7gagner &#39EE86l&#37E377e &#33CC58d&#32C049o&#30B53Au&#2EA92Bb&#2C9E1Bl&#2A920Ce &7en le buvant &8&l»"
+        - ""
+        - "&8• &fChance: &#39EE864&#32C0498&#2A920C%"
+        - "&8• &fPrix: &#39EE867&#38E67C,&#37DF725&#35D7680&#34CF5D0 &#32C049S&#30B83FH&#2FB135C&#2EA92Bo&#2DA120i&#2B9A16n&#2A920Cs"
+        - "&8• &fRécompense: &#39EE861&#38E77D5&#37E073,&#36D96A0&#34D2600&#33CB570 &#31BC44S&#30B53BH&#2FAE32C&#2DA728o&#2CA01Fi&#2B9915n&#2A920Cs"
+        - ""
+        - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+        customModelData: 2
+        potionColor: GREEN
+        price: 7500
+        reward: 15000
+        odds: 48.00
+        rewardCommands:
+        - "execute at %player% run particle minecraft:happy_villager ~ ~1.1 ~0.09 0.5 0.6 0.5 0.1 100"
+        - "sm %player% &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+      15:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 7
+      16:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 7
+      17:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 14
+      18:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 15
+      19:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 7
+      20:
+        name: "&cTequila"
+        lore:
+        - ""
+        - "&8&l« &7Achetez un &cTequila &7pour"
+        - "&c10,000 SHCoins &7et tentez de"
+        - "&7gagner &cle double &7en le buvant &8&l»"
+        - ""
+        - "&8• &fChance: &c48%"
+        - "&8• &fPrix: &c10,000 SHCoins"
+        - "&8• &fRécompense: &c20,000 SHCoins"
+        - ""
+        - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+        customModelData: 3
+        potionColor: RED
+        price: 10000
+        reward: 20000
+        odds: 48.00
+        rewardCommands:
+        - "execute at %player% run particle minecraft:happy_villager ~ ~1.1 ~0.09 0.5 0.6 0.5 0.1 100"
+        - "sm %player% &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+      21:
+        name: "&9&lVodka"
+        lore:
+        - ""
+        - "&8&l« &7Achetez un &9Vodka &7pour"
+        - "&930,000 SHCoins &7et tentez de"
+        - "&7gagner &9le double &7en le buvant &8&l»"
+        - ""
+        - "&8• &fChance: &946%"
+        - "&8• &fPrix: &930,000 SHCoins"
+        - "&8• &fRécompense: &960,000 SHCoins"
+        - ""
+        - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+        customModelData: 3
+        potionColor: BLUE
+        price: 30000
+        reward: 60000
+        odds: 46.00
+        rewardCommands:
+        - "execute at %player% run particle minecraft:happy_villager ~ ~1.1 ~0.09 0.5 0.6 0.5 0.1 100"
+        - "sm %player% &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+      22:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 7
+      23:
+        name: "&5Truc qui met mal"
+        lore:
+        - ""
+        - "&8&l« &7Achetez un &5truc &7pour"
+        - "&575,000 SHCoins &7et tentez de"
+        - "&7gagner &5le double &7en le buvant &8&l»"
+        - ""
+        - "&8• &fChance: &545%"
+        - "&8• &fPrix: &575,000 SHCoins"
+        - "&8• &fRécompense: &5150,000 SHCoins"
+        - ""
+        - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+        customModelData: 3
+        potionColor: FUCHSIA
+        price: 75000
+        reward: 150000
+        odds: 45.00
+        rewardCommands:
+        - "execute at %player% run particle minecraft:happy_villager ~ ~1.1 ~0.09 0.5 0.6 0.5 0.1 100"
+        - "sm %player% &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+      24:
+        name: "&2Champagne"
+        lore:
+        - ""
+        - "&8&l« &7Achetez un &2Champagne &7pour"
+        - "&2125,000 SHCoins &7et tentez de"
+        - "&7gagner &2le double &7en le buvant &8&l»"
+        - ""
+        - "&8• &fChance: &245%"
+        - "&8• &fPrix: &2125,000 SHCoins"
+        - "&8• &fRécompense: &2250,000 SHCoins"
+        - ""
+        - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+        customModelData: 3
+        potionColor: PURPLE
+        price: 125000
+        reward: 250000
+        odds: 45.00
+        rewardCommands:
+        - "execute at %player% run particle minecraft:happy_villager ~ ~1.1 ~0.09 0.5 0.6 0.5 0.1 100"
+        - "sm %player% &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+      25:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 7
+      26:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 15
+      27:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 14
+      28:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 7
+      29:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 7
+      30:
+        name: "&aChartreuse"
+        lore:
+        - ""
+        - "&8&l« &7Achetez une &aChartreuse &7pour"
+        - "&a250,000 SHCoins &7et tentez de"
+        - "&7gagner &ale double &7en le buvant &8&l»"
+        - ""
+        - "&8• &fChance: &a44%"
+        - "&8• &fPrix: &a250,000 SHCoins"
+        - "&8• &fRécompense: &a500,000 SHCoins"
+        - ""
+        - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+        customModelData: 3
+        potionColor: OLIVE
+        price: 250000
+        reward: 500000
+        odds: 44.00
+        rewardCommands:
+        - "execute at %player% run particle minecraft:happy_villager ~ ~1.1 ~0.09 0.5 0.6 0.5 0.1 100"
+        - "sm %player% &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+      31:
+        name: "&7Saké"
+        lore:
+        - ""
+        - "&8&l« &7Achetez un Saké pour"
+        - "&7750,000 SHCoins &7et tentez de"
+        - "&7gagner &7le double &7en le buvant &8&l»"
+        - ""
+        - "&8• &fChance: &743%"
+        - "&8• &fPrix: &7750,000 SHCoins"
+        - "&8• &fRécompense: &71,500,000 SHCoins"
+        - ""
+        - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+        customModelData: 3
+        potionColor: SILVER
+        price: 750000
+        reward: 1500000
+        odds: 43.00
+        rewardCommands:
+        - "execute at %player% run particle minecraft:happy_villager ~ ~1.1 ~0.09 0.5 0.6 0.5 0.1 100"
+        - "sm %player% &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+      32:
+        name: "&8&lAïe"
+        lore:
+        - ""
+        - "&8&l« &7Aïe... &8&l»"
+        - ""
+        - "&8• &fChance: &840%"
+        - "&8• &fPrix: &82,500,000 SHCoins"
+        - "&8• &fRécompense: &85,000,000 SHCoins"
+        - ""
+        - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+        customModelData: 3
+        potionColor: BLACK
+        price: 2500000
+        reward: 5000000
+        odds: 40.00
+        rewardCommands:
+        - "execute at %player% run particle minecraft:happy_villager ~ ~1.1 ~0.09 0.5 0.6 0.5 0.1 100"
+        - "sm %player% &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+        - "titlemanager abroadcast &7&l« &c&lParieur &8• &c%player% &fgagne la boisson &8&lAïe &8(&a+%reward% SHCoins&8) &8&l»"
+      33:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 7
+      34:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 7
+      35:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 14
+      36:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 15
+      37:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 14
+      38:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 15
+      39:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 14
+      40:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 15
+      41:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 14
+      42:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 15
+      43:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 14
+      44:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 15

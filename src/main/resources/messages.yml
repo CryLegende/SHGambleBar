@@ -1,0 +1,103 @@
+# ==========================================================================================
+#  SHGambleBar - messages
+# ==========================================================================================
+#  Un message vide ("") n'est jamais envoye : c'est la facon de desactiver un message.
+#  %prefix% est remplace par la valeur de "prefix" ci-dessous.
+#  Codes couleur : &a ... &f, et couleurs hexadecimales au format &#RRGGBB.
+#
+#  Placeholders disponibles selon le message :
+#   %player%             Pseudo du joueur concerne
+#   %drink% %drink_id%   Nom affiche / identifiant de la fiole
+#   %bar%                Identifiant du bar
+#   %price% %reward%     Prix et gain, formates avec la monnaie (ex : 1,000 SHCoins)
+#   %price_raw% %reward_raw%   Idem, sans la monnaie ni le formatage
+#   %super_reward% %super_reward_raw%   Gain d'une super victoire
+#   %odds% %super_odds%  Probabilites, en pourcentage
+#   %currency%           VAULT ou EXP
+#   %payout% %payout_raw%  Montant reellement gagne (0 en cas de defaite)
+#   %balance%            Solde du joueur apres l'operation
+#   %needed%             Montant manquant (message "not-enough")
+#   %time% %seconds%     Temps de cooldown restant (message "cooldown")
+#   %world%              Monde du joueur (message "world-blacklisted")
+#   %amount%             Quantite donnee (message "gave-drink")
+#
+#  Placeholders de la liste "stats" :
+#   %player% %drinks% %wins% %super_wins% %losses% %winrate%
+#   %wagered_money% %won_money% %profit_money%
+#   %wagered_exp% %won_exp% %profit_exp%
+#   %biggest_win_money% %biggest_win_exp% %streak% %best_streak%
+#
+#  Les placeholders PlaceholderAPI (%shgamblebar_...%) sont listes dans config.yml.
+# ==========================================================================================
+
+prefix: ""
+
+# --- Permissions et erreurs generales ---
+no-permission: "&7&l« &f&lSH &8&l» &fCommande inconnue, essayer autre chose."
+must-be-player: "&cCette commande doit etre executee par un joueur."
+invalid-bar: "&7&l« &c&lSH &8&l» &7Veuillez utiliser la commande &c/bar&7."
+player-not-found: "&cJoueur introuvable : &f%player%&c."
+invalid-drink: "&cFiole introuvable (bar : &f%bar%&c, fiole : &f%drink%&c)."
+usage-give: "&7&l« &c&lSH &8&l» &cUtilisation : /bar give <joueur> <barId> <fioleId> [quantite]"
+usage-open: "&7&l« &c&lSH &8&l» &cUtilisation : /bar open <joueur> [barId]"
+stats-unavailable: "&7&l« &c&lSH &8&l» &cLes statistiques sont desactivees."
+reloaded: "&7&l« &a&lSH &8&l» &7Les fichiers de SHGambleBar ont ete recharges."
+
+# --- Bar et achat ---
+bar-opened: ""
+playtime-required: "&7&l« &c&lSH &8&l» &7Le bar est accessible après &c%required% &7de jeu. Encore &c%time%&7."
+purchase: "&7&l« &e&lSH &8&l» &7Vous avez acheté la boisson %drink%"
+not-enough: "&7&l« &c&lSH &8&l» &7Vous n'avez pas assez de &cSHCoins &7ou &cEXP&7."
+full-inventory: "&7&l« &c&lSH &8&l» &cVotre inventaire est plein, impossible d'acheter une boisson."
+transaction-failed: "&7&l« &c&lSH &8&l» &cLa transaction a echoué, réessayez."
+currency-unavailable: "&7&l« &c&lSH &8&l» &cLa monnaie &f%currency% &cest indisponible, prévenez un administrateur."
+
+# --- Consommation ---
+no-off-hand: "&7&l« &c&lSH &8&l» &cVous devez mettre la boisson dans votre main principale."
+world-blacklisted: "&7&l« &c&lSH &8&l» &cImpossible de consommer cette boisson ici."
+cooldown: "&7&l« &c&lSH &8&l» &7Vous devez encore patienter &c%time%&7."
+already-gambling: "&7&l« &c&lSH &8&l» &7Une boisson est déjà en cours."
+drink: ""
+
+# --- Resultats ---
+# Les annonces publiques restent gerees par les commandes des fioles (bars/mainbar.yml).
+win: ""
+super-win: ""
+lose: ""
+
+# --- Administration ---
+gave-drink: "&7&l« &a&lSH &8&l» &7Vous avez donné &a%amount%x %drink% &7a &a%player%&7."
+received-drink: ""
+
+# --- /bar stats ---
+stats:
+  - "&8&m                                        "
+  - "&6&lParieur &8• &f%player%"
+  - ""
+  - "&8• &fBoissons bues : &6%drinks%"
+  - "&8• &fVictoires : &a%wins% &7(&f%winrate%&7%)"
+  - "&8• &fDefaites : &c%losses%"
+  - "&8• &fMise totale : &6%wagered_money%"
+  - "&8• &fGains totaux : &6%won_money%"
+  - "&8• &fBenefice : &6%profit_money%"
+  - "&8• &fPlus gros gain : &6%biggest_win_money%"
+  - "&8• &fSerie en cours : &6%streak% &7(record : &6%best_streak%&7)"
+  - "&8&m                                        "
+
+# --- /bar help ---
+help:
+  - "&8&m                                        "
+  - "&6&lParieur &8• &fAide"
+  - "&8• &f/bar &7- Ouvre le bar."
+  - "&8• &f/bar stats &7- Vos statistiques."
+  - "&8&m                                        "
+
+help-admin:
+  - "&8&m                                        "
+  - "&6&lParieur &8• &fAide administrateur"
+  - "&8• &f/bar [barId] &7- Ouvre un bar."
+  - "&8• &f/bar stats [joueur] &7- Statistiques."
+  - "&8• &f/bar give <joueur> <barId> <fioleId> [quantite] &7- Donne une fiole."
+  - "&8• &f/bar open <joueur> [barId] &7- Ouvre un bar pour un joueur."
+  - "&8• &f/bar reload &7- Recharge la configuration."
+  - "&8&m                                        "

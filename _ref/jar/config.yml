@@ -1,0 +1,518 @@
+# Here are the valid colors for the "potionColor" options for the 1.11+ version
+# RED
+# BLUE
+# AQUA
+# BLACK
+# FUCHSIA
+# GRAY
+# GREEN
+# LIME
+# MAROON
+# NAVY
+# OLIVE
+# ORANGE
+# PURPLE
+# SILVER
+# TEAL
+# WHITE
+# YELLOW
+
+# Here are the valid colors for the "potionColor" options for the 1.8 version
+# LIGHT_BLUE
+# BLUE
+# DARK_BLUE
+# MAGENTA
+# ORANGE
+# GREEN
+# PINK
+# LIGHT_PURPLE
+# PURPLE
+# DARK_PURPLE
+# AQUA
+# GRAY
+
+# Set this to false if you don't want to get an alert when there is a new update
+updateAlerts: true
+
+# This number is how many seconds the confusion effect lasts when a player loses a drink.
+# Set to 0 to disable.
+drunkEffect: 10
+
+# This number is how many seconds the blindness effect lasts when a player loses a drink.
+# Set to 0 to disable.
+blindnessEffect: 10
+
+# Set this to true if you want the GambleBar cooldown to apply to each drink individually
+# Leave it as false if you want the cooldown to apply to ANY/ALL drinks the same.
+individualCooldown: false
+
+# This number is how many seconds the cooldown is between a player consuming a GambleBar drink
+cooldownSeconds: 300
+
+# Set this to false to disable sound effects
+# If using 1.8.x server, view sound options here: https://helpch.at/docs/1.8.8/org/bukkit/Sound.html
+# If using a 1.11+ server, view sound options here (Note, not all will work depending on your server version): https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
+soundEnabled: false
+
+# This is the sound that plays if the player has a super lucky win on a drink
+superWinSound: ENTITY_PLAYER_LEVELUP
+
+# This is the sound that plays if the player wins a drink
+winSound: ENTITY_PLAYER_LEVELUP
+
+# This is the sound that plays if the player loses a drink
+loseSound: ENTITY_PLAYER_HURT
+
+# This is a list of worlds that drinking a GambleBar potion will not work in
+blacklistWorlds:
+- "world_nether"
+- "test_world"
+
+# Set this to true if you want bars to auto-close after drink purchase.
+autoCloseBar: true
+
+# This is the default economy plugin bars will use unless specified in the bar's configuration
+# Options: Vault, PlayerPoints
+defaultEconomy: Vault
+
+# The default bar is the bar opened when a player just uses "/bar"
+defaultBar: mainBar
+
+# Everything after this is the information for the bars
+# Format:
+# bars:
+#   <barID>:
+#     title: "Title of the Bar Inventory"
+#     size: 9 (This number must be a multiple of 9. Minimum is 9, Maximum is 54)
+#     economyType: "Vault" (Current options are Vault and PlayerPoints. If not specified, it will use the defaultEconomy)
+#     inventory:
+#       inventorySlotNumber:
+#         name: "Name of the drink"
+#         lore:
+#         - "This is the drink's lore"
+#         - "Lore Lore"
+#         customModelData: 1 (Ignore if not using custom model data. Custom Model Data will override drink color.)
+#         potionColor: BLUE (Check available colors in the beginning of this file)
+#         price: 500 (Price of the drink, must be an integer)
+#         reward: 1000 (Reward from winning the drink)
+#         superLuckyReward: 2000 (Super lucky reward from winning the drink)
+#         odds: 50.00 (% Odds of winning the drink. Must be a decimal number (double))
+#         superLuckyOdds: 5.00 (% Odds of getting a super lucky win of the drink. Must be a decimal number (double))
+#         rewardCommands:
+#         - "Command to run from console when the player wins a drink"
+#         - "%player% = players name and %reward% is the amount of money they won"
+#         superLuckyRewardCommands:
+#         - "broadcast &c%player% &fgot very lucky and won &c$%reward% &ffrom the GambleBar!"
+bars:
+  mainBar:
+    title: "&#c90899&lD&#c90885&le&#c90875&lf&#c9085c&la&#c90848&lu&#c90835&ll&#c9081f&lt &#c91208&lB&#c92508&la&#c93808&lr"
+    size: 27
+    economyType: Vault
+    inventory:
+      0:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 14
+      1:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 0
+      2:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 11
+      3:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 14
+      4:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 0
+      5:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 11
+      6:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 14
+      7:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 0
+      8:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 11
+      9:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 0
+      10:
+        name: "&c&lBeer"
+        lore:
+        - "&#00eff7&lClick to buy for a chance to win!"
+        - "&#00bdf7Price: &f$%price%"
+        - "&#00a1f7Reward: &f$%reward%"
+        - "&#007cf7Odds of winning: &f%odds%%"
+        - "&#00a1f7Super Lucky Reward: &f$%superLuckyReward%"
+        - "&#007cf7Odds of winning: &f%superLuckyOdds%%"
+        customModelData: 1
+        potionColor: BLUE
+        price: 500
+        reward: 1000
+        superLuckyReward: 2000
+        odds: 50.00
+        superLuckyOdds: 5.00
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c$%reward% &ffrom drinking a &c&l%drink%!"
+        superLuckyRewardCommands:
+        - "broadcast &c%player% &fgot very lucky and won &c$%reward% &ffrom the GambleBar!"
+      11:
+        name: "&c&lWine"
+        lore:
+        - "&#00eff7&lClick to buy for a chance to win!"
+        - "&#00bdf7Price: &f$%price%"
+        - "&#00a1f7Reward: &f$%reward%"
+        - "&#007cf7Odds of winning: &f%odds%%"
+        - "&#00a1f7Super Lucky Reward: &f$%superLuckyReward%"
+        - "&#007cf7Odds of winning: &f%superLuckyOdds%%"
+        customModelData: 2
+        potionColor: PURPLE
+        price: 1000
+        reward: 2000
+        superLuckyReward: 4000
+        odds: 50.00
+        superLuckyOdds: 5.00
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c$%reward% &ffrom the GambleBar!"
+        superLuckyRewardCommands:
+        - "broadcast &c%player% &fgot very lucky and won &c$%reward% &ffrom the GambleBar!"
+      12:
+        name: "&c&lVodka"
+        lore:
+        - "&#00eff7&lClick to buy for a chance to win!"
+        - "&#00bdf7Price: &f$%price%"
+        - "&#00a1f7Reward: &f$%reward%"
+        - "&#007cf7Odds of winning: &f%odds%%"
+        - "&#00a1f7Super Lucky Reward: &f$%superLuckyReward%"
+        - "&#007cf7Odds of winning: &f%superLuckyOdds%%"
+        customModelData: 3
+        potionColor: GREEN
+        price: 5000
+        reward: 10000
+        superLuckyReward: 20000
+        odds: 47.50
+        superLuckyOdds: 5.00
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c$%reward% &ffrom the GambleBar!"
+        superLuckyRewardCommands:
+        - "broadcast &c%player% &fgot very lucky and won &c$%reward% &ffrom the GambleBar!"
+      13:
+        name: "&c&lRum"
+        lore:
+        - "&#00eff7&lClick to buy for a chance to win!"
+        - "&#00bdf7Price: &f$%price%"
+        - "&#00a1f7Reward: &f$%reward%"
+        - "&#007cf7Odds of winning: &f%odds%%"
+        - "&#00a1f7Super Lucky Reward: &f$%superLuckyReward%"
+        - "&#007cf7Odds of winning: &f%superLuckyOdds%%"
+        customModelData: 4
+        potionColor: GRAY
+        price: 10000
+        reward: 20000
+        superLuckyReward: 40000
+        odds: 47.50
+        superLuckyOdds: 5.00
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c$%reward% &ffrom the GambleBar!"
+        superLuckyRewardCommands:
+        - "broadcast &c%player% &fgot very lucky and won &c$%reward% &ffrom the GambleBar!"
+      14:
+        name: "&c&lWhiskey"
+        lore:
+        - "&#00eff7&lClick to buy for a chance to win!"
+        - "&#00bdf7Price: &f$%price%"
+        - "&#00a1f7Reward: &f$%reward%"
+        - "&#007cf7Odds of winning: &f%odds%%"
+        - "&#00a1f7Super Lucky Reward: &f$%superLuckyReward%"
+        - "&#007cf7Odds of winning: &f%superLuckyOdds%%"
+        customModelData: 5
+        potionColor: ORANGE
+        price: 25000
+        reward: 50000
+        superLuckyReward: 100000
+        odds: 47.50
+        superLuckyOdds: 5.00
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c$%reward% &ffrom the GambleBar!"
+        superLuckyRewardCommands:
+        - "broadcast &c%player% &fgot very lucky and won &c$%reward% &ffrom the GambleBar!"
+      15:
+        name: "&c&lEverclear"
+        lore:
+        - "&#00eff7&lClick to buy for a chance to win!"
+        - "&#00bdf7Price: &f$%price%"
+        - "&#00a1f7Reward: &f$%reward%"
+        - "&#007cf7Odds of winning: &f%odds%%"
+        - "&#00a1f7Super Lucky Reward: &f$%superLuckyReward%"
+        - "&#007cf7Odds of winning: &f%superLuckyOdds%%"
+        customModelData: 6
+        potionColor: PURPLE
+        price: 50000
+        reward: 100000
+        superLuckyReward: 200000
+        odds: 45.00
+        superLuckyOdds: 5.00
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c$%reward% &ffrom the GambleBar!"
+        superLuckyRewardCommands:
+        - "broadcast &c%player% &fgot very lucky and won &c$%reward% &ffrom the GambleBar!"
+      16:
+        name: "&c&lSmirnoff's Green Apple"
+        lore:
+        - "&#00eff7&lClick to buy for a chance to win!"
+        - "&#00bdf7Price: &f$%price%"
+        - "&#00a1f7Reward: &f$%reward%"
+        - "&#007cf7Odds of winning: &f%odds%%"
+        - "&#00a1f7Super Lucky Reward: &f$%superLuckyReward%"
+        - "&#007cf7Odds of winning: &f%superLuckyOdds%%"
+        customModelData: 7
+        potionColor: BLUE
+        price: 100000
+        reward: 200000
+        superLuckyReward: 400000
+        odds: 45.00
+        superLuckyOdds: 5.00
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c$%reward% &ffrom the GambleBar!"
+        superLuckyRewardCommands:
+        - "broadcast &c%player% &fgot very lucky and won &c$%reward% &ffrom the GambleBar!"
+      17:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 0
+      18:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 14
+      19:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 0
+      20:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 11
+      21:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 14
+      22:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 0
+      23:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 11
+      24:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 14
+      25:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 0
+      26:
+        name: " "
+        item: STAINED_GLASS_PANE
+        data: 11
+  bar2:
+    title: "&c&l2nd Bar"
+    size: 18
+    economyType: PlayerPoints
+    inventory:
+      0:
+        name: "&c&lBud Light"
+        lore:
+        - "&c&lClick to buy for a chance to win!"
+        - "&ePrice: &f%price% &ePlayerPoints"
+        - "&eReward: &f%reward% &ePlayerPoints"
+        - "&eOdds of winning: &f%odds%%"
+        potionColor: PURPLE
+        price: 500
+        reward: 1000
+        odds: 50.00
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c%reward% &fPlayerPoints from the GambleBar!"
+      1:
+        name: "&c&lBudweiser"
+        lore:
+        - "&c&lClick to buy for a chance to win!"
+        - "&ePrice: &f%price% &ePlayerPoints"
+        - "&eReward: &f%reward% &ePlayerPoints"
+        - "&eOdds of winning: &f%odds%%"
+        potionColor: BLUE
+        price: 1000
+        reward: 2000
+        odds: 50.00
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c%reward% &fPlayerPoints from the GambleBar!"
+      2:
+        name: "&c&lHeineken"
+        lore:
+        - "&c&lClick to buy for a chance to win!"
+        - "&ePrice: &f%price% &ePlayerPoints"
+        - "&eReward: &f%reward% &ePlayerPoints"
+        - "&eOdds of winning: &f%odds%%"
+        potionColor: GRAY
+        price: 5000
+        reward: 10000
+        odds: 50.00
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c%reward% &fPlayerPoints from the GambleBar!"
+      3:
+        name: "&c&lNatural Light"
+        lore:
+        - "&c&lClick to buy for a chance to win!"
+        - "&ePrice: &f%price% &ePlayerPoints"
+        - "&eReward: &f%reward% &ePlayerPoints"
+        - "&eOdds of winning: &f%odds%%"
+        potionColor: AQUA
+        price: 10000
+        reward: 20000
+        odds: 50.00
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c%reward% &fPlayerPoints from the GambleBar!"
+      4:
+        name: "&c&lWhite Claw"
+        lore:
+        - "&c&lClick to buy for a chance to win!"
+        - "&ePrice: &f%price% &ePlayerPoints"
+        - "&eReward: &f%reward% &ePlayerPoints"
+        - "&eOdds of winning: &f%odds%%"
+        potionColor: GRAY
+        price: 25000
+        reward: 50000
+        odds: 47.50
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c%reward% &fPlayerPoints from the GambleBar!"
+      5:
+        name: "&c&lTruly"
+        lore:
+        - "&c&lClick to buy for a chance to win!"
+        - "&ePrice: &f%price% &ePlayerPoints"
+        - "&eReward: &f%reward% &ePlayerPoints"
+        - "&eOdds of winning: &f%odds%%"
+        potionColor: BLUE
+        price: 50000
+        reward: 100000
+        odds: 47.50
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c%reward% &fPlayerPoints from the GambleBar!"
+      6:
+        name: "&c&lRiesling"
+        lore:
+        - "&c&lClick to buy for a chance to win!"
+        - "&ePrice: &f%price% &ePlayerPoints"
+        - "&eReward: &f%reward% &ePlayerPoints"
+        - "&eOdds of winning: &f%odds%%"
+        potionColor: GREEN
+        price: 100000
+        reward: 200000
+        odds: 45.00
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c%reward% &fPlayerPoints from the GambleBar!"
+      7:
+        name: "&c&lChardonnay"
+        lore:
+        - "&c&lClick to buy for a chance to win!"
+        - "&ePrice: &f%price% &ePlayerPoints"
+        - "&eReward: &f%reward% &ePlayerPoints"
+        - "&eOdds of winning: &f%odds%%"
+        potionColor: ORANGE
+        price: 200000
+        reward: 400000
+        odds: 45.00
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c%reward% &fPlayerPoints from the GambleBar!"
+      8:
+        name: "&c&lSyrah"
+        lore:
+        - "&c&lClick to buy for a chance to win!"
+        - "&ePrice: &f%price% &ePlayerPoints"
+        - "&eReward: &f%reward% &ePlayerPoints"
+        - "&eOdds of winning: &f%odds%%"
+        potionColor: ORANGE
+        price: 400000
+        reward: 800000
+        odds: 45.00
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c%reward% &fPlayerPoints from the GambleBar!"
+      9:
+        name: "&c&lBacardi"
+        lore:
+        - "&c&lClick to buy for a chance to win!"
+        - "&ePrice: &f%price% &ePlayerPoints"
+        - "&eReward: &f%reward% &ePlayerPoints"
+        - "&eOdds of winning: &f%odds%%"
+        potionColor: GREEN
+        price: 600000
+        reward: 1200000
+        odds: 42.50
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c%reward% &fPlayerPoints from the GambleBar!"
+      10:
+        name: "&c&lCaptain Morgan"
+        lore:
+        - "&c&lClick to buy for a chance to win!"
+        - "&ePrice: &f%price% &ePlayerPoints"
+        - "&eReward: &f%reward% &ePlayerPoints"
+        - "&eOdds of winning: &f%odds%%"
+        potionColor: AQUA
+        price: 800000
+        reward: 1600000
+        odds: 42.50
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c%reward% &fPlayerPoints from the GambleBar!"
+      11:
+        name: "&c&lSvedka"
+        lore:
+        - "&c&lClick to buy for a chance to win!"
+        - "&ePrice: &f%price% &ePlayerPoints"
+        - "&eReward: &f%reward% &ePlayerPoints"
+        - "&eOdds of winning: &f%odds%%"
+        potionColor: BLUE
+        price: 1000000
+        reward: 2000000
+        odds: 40.00
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c%reward% &fPlayerPoints from the GambleBar!"
+      12:
+        name: "&c&lGrey Goose"
+        lore:
+        - "&c&lClick to buy for a chance to win!"
+        - "&ePrice: &f%price% &ePlayerPoints"
+        - "&eReward: &f%reward% &ePlayerPoints"
+        - "&eOdds of winning: &f%odds%%"
+        potionColor: ORANGE
+        price: 1500000
+        reward: 3000000
+        odds: 40.00
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c%reward% &fPlayerPoints from the GambleBar!"
+      13:
+        name: "&c&lBusch Light"
+        lore:
+        - "&c&lClick to buy for a chance to win!"
+        - "&ePrice: &f%price% &ePlayerPoints"
+        - "&eReward: &f%reward% &ePlayerPoints"
+        - "&eOdds of winning: &f%odds%%"
+        potionColor: PURPLE
+        price: 2000000
+        reward: 4000000
+        odds: 37.50
+        rewardCommands:
+        - "broadcast &c%player% &fhas won &c%reward% &fPlayerPoints from the GambleBar!"

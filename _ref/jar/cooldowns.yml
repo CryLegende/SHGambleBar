@@ -1,0 +1,3 @@
+# Don't touch anything in this file
+# This is only used to store drink cooldown data through server/plugin restarts
+cooldowns:

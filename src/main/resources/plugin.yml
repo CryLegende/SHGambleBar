@@ -1,0 +1,46 @@
+name: SHGambleBar
+version: '${project.version}'
+main: org.Cry_Legende.sHGambleBar.SHGambleBar
+api-version: '1.20'
+author: Cry_Legende
+description: Bar a paris (remplacant de GambleBarPro) - Vault, EXP, animations, stats.
+softdepend: [Vault, PlaceholderAPI]
+loadbefore: [Citizens]
+
+commands:
+  shgamblebar:
+    # /bar est l'alias utilise par le PNJ Citizens "SPAWN PARIEUR" (commande joueur "bar").
+    aliases: [bar]
+    description: Ouvre le bar a paris.
+    usage: /shgamblebar help
+
+permissions:
+  shgamblebar.use:
+    description: Ouvrir un bar avec /bar.
+    default: true
+  shgamblebar.bypass.cooldown:
+    description: Ignorer le cooldown entre deux fioles.
+    default: op
+  shgamblebar.bypass.playtime:
+    description: Ouvrir un bar sans le temps de jeu minimum.
+    default: op
+  shgamblebar.admin:
+    description: Acces a toutes les commandes d'administration.
+    default: op
+    children:
+      shgamblebar.admin.reload: true
+      shgamblebar.admin.give: true
+      shgamblebar.admin.open: true
+      shgamblebar.admin.stats: true
+  shgamblebar.admin.reload:
+    description: /shgamblebar reload
+    default: op
+  shgamblebar.admin.give:
+    description: /shgamblebar give <joueur> <bar> <fiole> [quantite]
+    default: op
+  shgamblebar.admin.open:
+    description: /shgamblebar open <joueur> [bar]
+    default: op
+  shgamblebar.admin.stats:
+    description: /shgamblebar stats <joueur>
+    default: op

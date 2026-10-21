@@ -1,0 +1,10 @@
+name: GambleBarPro
+author: _True_Religion
+version: 2.0.6
+main: com.trsoftware.gamblebarpro.GambleBar
+softdepend: [Vault, PlayerPoints]
+loadbefore: [Citizens]
+commands:
+  gamblebar:
+    aliases: [bar, gamble]
+    usage: /bar help

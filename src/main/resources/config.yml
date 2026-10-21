@@ -1,0 +1,441 @@
+# ==========================================================================================
+#  SHGambleBar - Bar a paris de SkyHand (remplacant de GambleBarPro)
+# ==========================================================================================
+#
+#  COMMANDES
+#  -----------------------------------------------------------------------------------------
+#  /bar                                     Ouvre le bar par defaut (alias de /shgamblebar)
+#  /bar <barId>                             Ouvre un bar precis
+#  /bar help                                Affiche l'aide
+#  /bar stats [joueur]                      Affiche les statistiques
+#  /bar reload                              Recharge config.yml, messages.yml et bars/
+#  /bar give <joueur> <barId> <fioleId> [n] Donne une fiole a un joueur
+#  /bar open <joueur> [barId]               Ouvre un bar pour un autre joueur (PNJ, cmd blocks)
+#
+#  PERMISSIONS
+#  -----------------------------------------------------------------------------------------
+#  shgamblebar.use                Ouvrir un bar (defaut : true, tout le monde)
+#  shgamblebar.bypass.cooldown    Ignorer le cooldown entre deux fioles (defaut : op)
+#  shgamblebar.bypass.playtime    Ignorer le temps de jeu minimum (defaut : op)
+#  shgamblebar.admin              Toutes les permissions d'administration (defaut : op)
+#  shgamblebar.admin.reload       /bar reload
+#  shgamblebar.admin.give         /bar give
+#  shgamblebar.admin.open         /bar open
+#  shgamblebar.admin.stats        /bar stats <autre joueur>
+#  + la permission definie dans "permission:" de chaque bar (bars/*.yml), vide = libre
+#  + la permission definie dans "permission:" de chaque fiole
+#
+#  PLACEHOLDERS (PlaceholderAPI)
+#  -----------------------------------------------------------------------------------------
+#  Statistiques du joueur :
+#   %shgamblebar_drinks%              Nombre de fioles bues
+#   %shgamblebar_wins%                Victoires
+#   %shgamblebar_super_wins%          Super victoires
+#   %shgamblebar_losses%              Defaites
+#   %shgamblebar_winrate%             % de victoires
+#   %shgamblebar_wagered_money%       Total mise (monnaie Vault)
+#   %shgamblebar_won_money%           Total gagne (monnaie Vault)
+#   %shgamblebar_profit_money%        Benefice (gagne - mise)
+#   %shgamblebar_wagered_exp%         Total mise (points d'XP)
+#   %shgamblebar_won_exp%             Total gagne (points d'XP)
+#   %shgamblebar_profit_exp%          Benefice en XP
+#   %shgamblebar_biggest_win_money%   Plus gros gain en monnaie
+#   %shgamblebar_biggest_win_exp%     Plus gros gain en XP
+#   %shgamblebar_streak%              Serie de victoires en cours
+#   %shgamblebar_lose_streak%         Serie de defaites en cours
+#   %shgamblebar_best_streak%         Meilleure serie de victoires
+#
+#  Totaux serveur (<colonne> : drinks, wins, super_wins, losses,
+#                  wagered_money, won_money, wagered_exp, won_exp) :
+#   %shgamblebar_server_<colonne>%
+#
+#  Classements (<rang> commence a 1) :
+#   %shgamblebar_top_name_<colonne>_<rang>%    Pseudo du joueur classe
+#   %shgamblebar_top_value_<colonne>_<rang>%   Valeur du joueur classe
+#   Exemple : %shgamblebar_top_name_won_money_1%
+#
+#  PLACEHOLDERS UTILISABLES DANS messages.yml ET DANS LES COMMANDES DES FIOLES
+#  -----------------------------------------------------------------------------------------
+#   %player% %drink% %drink_id% %bar% %price% %price_raw% %reward% %reward_raw%
+#   %super_reward% %super_reward_raw% %odds% %super_odds% %currency%
+#   %payout% %payout_raw% %balance% (a la revelation) %time% (cooldown)
+#
+# ==========================================================================================
+
+# Messages supplementaires dans la console (chargement des effets, animations inconnues, ...).
+debug: false
+
+# Bar ouvert par /bar sans argument. Correspond au nom du fichier dans bars/ (sans .yml).
+default-bar: mainbar
+
+# Mondes dans lesquels il est impossible de consommer une fiole.
+blacklisted-worlds:
+  - "world_nether"
+  - "test_world"
+
+gui:
+  # Fermer le bar automatiquement apres un achat.
+  auto-close-on-purchase: true
+  # Donner la fiole dans l'inventaire apres l'achat.
+  give-item-on-purchase: true
+  # true = le pari est lance immediatement a l'achat, sans passer par l'item.
+  instant-gamble-on-purchase: false
+  # Effet joue a l'achat (voir la section "effects" plus bas). Laisser vide pour desactiver.
+  purchase-effect: purchase
+
+drink:
+  # true = la fiole doit etre en main principale pour etre bue.
+  main-hand-only: true
+
+cooldown:
+  # Delai en secondes entre deux fioles. 0 = desactive.
+  seconds: 0
+  # true = un cooldown independant par type de fiole, false = un seul cooldown global.
+  per-drink: false
+
+requirements:
+  # Temps de jeu minimum sur ce serveur, en minutes, avant de pouvoir ouvrir un bar
+  # (commande et PNJ). Bloque les comptes tout juste crees qui viennent miser leur argent
+  # de depart. 0 = desactive.
+  min-playtime-minutes: 120
+
+# ------------------------------------------------------------------------------------------
+#  COMPATIBILITE AVEC LES ANCIENNES FIOLES GambleBarPro
+# ------------------------------------------------------------------------------------------
+#  GambleBarPro n'ecrivait aucune donnee cachee (NBT) sur ses fioles : elles ne sont
+#  reconnaissables que par leur nom (et leur description). Tant que "name" et "lore" des
+#  fioles de bars/mainbar.yml restent identiques a l'ancienne config, les fioles deja
+#  possedees par les joueurs continuent de fonctionner.
+#  Une fois que plus personne n'a d'ancienne fiole, passer "enabled" a false.
+legacy-compatibility:
+  enabled: true
+  # true = comparer aussi la description (plus strict, evite les faux positifs).
+  match-lore: true
+  # Journaliser chaque ancienne fiole detectee (a n'activer que pour verifier).
+  log-detections: false
+
+storage:
+  # Seul SQLITE est disponible.
+  type: SQLITE
+  # Fichier de la base, dans le dossier du plugin.
+  sqlite:
+    file: data.db
+  # false = aucune statistique enregistree (les placeholders renvoient 0).
+  track-stats: true
+  # Sauvegarde periodique des statistiques, en minutes. 0 = uniquement a l'arret.
+  auto-save-minutes: 5
+  # Duree de mise en cache des classements et totaux serveur, en secondes.
+  leaderboard-cache-seconds: 60
+
+# ==========================================================================================
+#  ANIMATIONS
+# ==========================================================================================
+#  Animation de suspense jouee entre la consommation et l'annonce du resultat.
+#  Le resultat est tire AVANT l'animation : celle-ci ne fait que le mettre en scene.
+#
+#  Types disponibles :
+#    NONE      Aucune animation, le resultat tombe immediatement.
+#    TITLE     Titre + sous-titre animes, avec un son rythme qui monte en tonalite.
+#    ROULETTE  Inventaire qui defile et ralentit jusqu'a s'arreter sur le resultat.
+#
+#  Le type se choisit par fiole ("animation" dans bars/*.yml), sinon par bar
+#  ("default-animation"), sinon ici ("default-type").
+#  enabled: false force NONE partout, quelle que soit la configuration des fioles.
+#
+#  Pendant une animation ROULETTE, fermer le GUI ne permet pas de tricher : le resultat
+#  est applique immediatement. Une deconnexion en pleine animation applique aussi le
+#  resultat (le joueur a deja paye).
+animation:
+  enabled: true
+  # Type utilise si un bar ou une fiole n'en precise pas : NONE, TITLE ou ROULETTE.
+  default-type: TITLE
+
+  title:
+    # Images qui defilent. %frame% dans le titre/sous-titre est remplace par l'image courante.
+    frames:
+      - "&e|&7||||"
+      - "&7|&e|&7|||"
+      - "&7||&e|&7||"
+      - "&7|||&e|&7|"
+      - "&7||||&e|"
+      - "&7|||&e|&7|"
+      - "&7||&e|&7||"
+      - "&7|&e|&7|||"
+    # Ligne du haut. %frame% y est aussi accepte.
+    title: ""
+    # Ligne du bas.
+    subtitle: "%frame%"
+    # Duree totale de l'animation, en ticks (20 ticks = 1 seconde).
+    duration-ticks: 40
+    # Delai entre deux images, en ticks. Plus petit = defilement plus rapide.
+    frame-interval-ticks: 3
+    # true = le joueur ne peut plus se deplacer pendant l'animation (il peut toujours
+    # tourner la camera). Il est libere des la revelation du resultat.
+    freeze-player: false
+    # Son joue a chaque changement d'image. Meme options que "effects.<nom>.sounds".
+    tick-sound:
+      # false = animation muette.
+      enabled: true
+      sound: BLOCK_NOTE_BLOCK_HAT
+      volume: 0.7
+      pitch: 0.8
+      # Increment de tonalite a chaque image (monte progressivement la tension).
+      pitch-step: 0.02
+
+  roulette:
+    # Titre de l'inventaire de la roulette.
+    title: "&8» &6Parieur"
+    # Hauteur du GUI, de 3 a 6 lignes. La bande qui defile est toujours la ligne du milieu.
+    rows: 3
+    # Nombre de crans parcourus avant l'arret. Plus grand = tour plus long.
+    spin-steps: 32
+    # Vitesse de defilement : intervalle en ticks au debut, puis a la fin. Le ralentissement
+    # entre les deux est progressif (nerveux au debut, tres lent sur les derniers crans).
+    start-interval-ticks: 1
+    end-interval-ticks: 8
+    # Temps d'affichage du resultat avant la fermeture du GUI.
+    reveal-delay-ticks: 25
+    # true = le GUI se ferme tout seul apres la revelation.
+    close-on-reveal: true
+    # Item qui remplit les cases inutilisees du GUI.
+    filler:
+      material: BLACK_STAINED_GLASS_PANE
+      name: " "
+    # Repere place au-dessus et en dessous de la case centrale.
+    pointer:
+      enabled: true
+      material: ORANGE_STAINED_GLASS_PANE
+      name: "&6&l▼"
+    # Son joue a chaque cran. Meme options que "effects.<nom>.sounds".
+    tick-sound:
+      enabled: true
+      sound: BLOCK_NOTE_BLOCK_HAT
+      volume: 0.6
+      pitch: 1.2
+    # Son joue au moment de l'arret sur le resultat.
+    stop-sound:
+      enabled: true
+      sound: BLOCK_NOTE_BLOCK_PLING
+      volume: 1.0
+      pitch: 1.5
+    # Symboles qui defilent pendant le tour (tires au hasard). Autant d'entrees que voulu,
+    # chacune avec "material" (nom Bukkit du materiau) et "name".
+    symbols:
+      - material: GOLD_NUGGET
+        name: "&e&l?"
+      - material: EMERALD
+        name: "&a&l?"
+      - material: REDSTONE
+        name: "&c&l?"
+      - material: LAPIS_LAZULI
+        name: "&9&l?"
+    # Symbole affiche dans la case centrale a l'arret, selon le resultat obtenu.
+    results:
+      win:
+        material: GOLD_INGOT
+        name: "&6&lGAGNE"
+      super-win:
+        material: NETHER_STAR
+        name: "&d&lSUPER GAIN"
+      lose:
+        material: COAL
+        name: "&8&lPERDU"
+
+# ==========================================================================================
+#  EFFETS (particules, sons, effets de potion)
+# ==========================================================================================
+#  Chaque effet porte un nom, reutilisable dans bars/*.yml via "effects.win",
+#  "effects.super-win" et "effects.lose" de chaque fiole.
+#
+#  Un effet peut contenir trois sections, toutes optionnelles : "particles", "sounds" et
+#  "potion-effects". Chaque entree porte un nom libre (halo, sparkle, ...) qui sert
+#  uniquement a s'y retrouver. Toutes les couches sont jouees en parallele.
+#
+#  ---------------------------------------------------------------------------------------
+#  particles.<nom>              (valeur par defaut entre parentheses)
+#  ---------------------------------------------------------------------------------------
+#    type              (happy_villager)  Nom de la particule. Voir la liste plus bas.
+#    shape             (POINT)           Forme geometrique. Voir la liste plus bas.
+#    count             (20)              Nombre de particules par passe.
+#    radius            (0.6)             Rayon de la forme, en blocs.
+#    height            (1.0)             Hauteur de la forme, en blocs.
+#    turns             (2.0)             Nombre de tours (HELIX, SPIRAL, VORTEX, CONE).
+#    speed             (0.0)             Vitesse/extra de la particule (comme /particle).
+#    offset.x/y/z      (0.0)             Decalage par rapport au joueur, en blocs.
+#    duration-ticks    (1)               Duree totale de la couche (20 ticks = 1 seconde).
+#    interval-ticks    (1)               Delai entre deux passes.
+#    delay-ticks       (0)               Delai avant le demarrage de la couche.
+#    rotation-per-tick (0.0)             Rotation de la forme, en degres par tick.
+#    follow-player     (true)            true = suit le joueur, false = reste sur place.
+#    at-eye-level      (false)           true = centre a hauteur des yeux.
+#    visible-to-others (true)            false = visible par le joueur seul.
+#    color             (blanc)           Couleur "#RRGGBB", particules dust uniquement.
+#    fade-color        (noir)            Couleur d'arrivee, dust_color_transition seulement.
+#    size              (1.0)             Taille des particules dust.
+#    block-material    (STONE)           Materiau utilise par block / item / falling_dust.
+#
+#  --- Formes (shape) ---
+#    POINT           Tout au meme point, comme la commande /particle vanilla.
+#    CIRCLE          Cercle horizontal de rayon "radius" autour du joueur.
+#    RING_EXPANDING  Anneau dont le rayon grandit de 0 a "radius" pendant l'effet
+#                    (onde de choc). Monte aussi jusqu'a "height".
+#    SPHERE          Sphere pleine et reguliere de rayon "radius".
+#    HELIX           Double helice montante : deux brins opposes qui montent sur "height"
+#                    en faisant "turns" tours.
+#    SPIRAL          Helice simple montante.
+#    VORTEX          Helice dont le rayon se resserre en montant (tornade inversee).
+#    BURST           Explosion : positions aleatoires dans une sphere, centrees a "height".
+#    CONE            Cone : le rayon grandit avec la hauteur.
+#    PILLAR          Colonne verticale de rayon "radius" et de hauteur "height".
+#
+#    "rotation-per-tick" fait tourner CIRCLE, HELIX, SPIRAL, VORTEX, CONE et SPHERE.
+#    "duration-ticks" + "interval-ticks" definissent le nombre de passes :
+#    duree 20 et intervalle 2 = 10 passes etalees sur une seconde.
+#
+#  --- Particules (type) ---
+#    Le nom Minecraft (celui de /particle, avec ou sans "minecraft:") et le nom Bukkit
+#    sont tous les deux acceptes. Les plus utiles :
+#      happy_villager  angry_villager  heart  note  crit  enchanted_hit  enchant
+#      flame  soul  soul_fire_flame  smoke  large_smoke  cloud  lava  dripping_lava
+#      end_rod  glow  electric_spark  wax_on  wax_off  scrape  totem_of_undying
+#      firework  explosion  explosion_emitter  poof  dragon_breath  portal  witch
+#      splash  bubble  underwater  rain  squid_ink  spit  sweep_attack  damage_indicator
+#      cherry_leaves  sculk_soul  sculk_charge_pop
+#      dust                    (necessite "color", et "size")
+#      dust_color_transition   (necessite "color" et "fade-color")
+#      block / item / falling_dust  (necessitent "block-material")
+#    Un nom inconnu declenche un avertissement dans la console et bascule sur
+#    happy_villager.
+#
+#  ---------------------------------------------------------------------------------------
+#  sounds.<nom>
+#  ---------------------------------------------------------------------------------------
+#    sound          (ENTITY_PLAYER_LEVELUP) Nom Bukkit (ENTITY_PLAYER_LEVELUP) ou cle
+#                                           Minecraft (entity.player.levelup). Les sons de
+#                                           resource pack se mettent sous forme de cle.
+#    volume         (1.0)   Au-dela de 1.0, seule la portee augmente, pas le volume percu.
+#    pitch          (1.0)   Tonalite, entre 0.5 et 2.0.
+#    pitch-step     (0.0)   Ajout de tonalite a chaque repetition (montee en tension).
+#    delay-ticks    (0)     Delai avant le premier son.
+#    repeat         (1)     Nombre de repetitions.
+#    interval-ticks (4)     Delai entre deux repetitions.
+#    global         (false) true = audible par tout le monde autour, false = joueur seul.
+#
+#    Sons courants : ENTITY_PLAYER_LEVELUP  ENTITY_EXPERIENCE_ORB_PICKUP  ENTITY_ITEM_PICKUP
+#      BLOCK_NOTE_BLOCK_PLING  BLOCK_NOTE_BLOCK_HAT  BLOCK_NOTE_BLOCK_BELL
+#      ENTITY_FIREWORK_ROCKET_BLAST  ENTITY_FIREWORK_ROCKET_LAUNCH  UI_TOAST_CHALLENGE_COMPLETE
+#      ENTITY_ENDER_DRAGON_GROWL  ENTITY_PLAYER_HURT  ENTITY_VILLAGER_NO  ENTITY_VILLAGER_YES
+#      BLOCK_ANVIL_LAND  ENTITY_GENERIC_EXPLODE  BLOCK_CHEST_OPEN  ITEM_BOTTLE_EMPTY
+#
+#  ---------------------------------------------------------------------------------------
+#  potion-effects.<nom>
+#  ---------------------------------------------------------------------------------------
+#    type           (obligatoire) Nom Bukkit de l'effet. Voir la liste ci-dessous.
+#    duration-ticks (60)          Duree en ticks (20 ticks = 1 seconde).
+#    amplifier      (0)           Niveau - 1 : 0 = niveau I, 1 = niveau II, ...
+#    ambient        (false)       true = particules attenuees (comme une balise).
+#    particles      (true)        false = aucune particule de potion visible.
+#
+#    Types : SPEED SLOW FAST_DIGGING SLOW_DIGGING INCREASE_DAMAGE HEAL HARM JUMP
+#      CONFUSION (nausee) REGENERATION DAMAGE_RESISTANCE FIRE_RESISTANCE WATER_BREATHING
+#      INVISIBILITY BLINDNESS NIGHT_VISION HUNGER WEAKNESS POISON WITHER HEALTH_BOOST
+#      ABSORPTION SATURATION GLOWING LEVITATION LUCK UNLUCK SLOW_FALLING CONDUIT_POWER
+#      DOLPHINS_GRACE BAD_OMEN HERO_OF_THE_VILLAGE DARKNESS
+effects:
+
+  # Effet joue a l'achat d'une fiole.
+  purchase:
+    sounds:
+      pop:
+        sound: ENTITY_ITEM_PICKUP
+        volume: 0.8
+        pitch: 1.2
+
+  # Effet de victoire : remplace l'ancienne commande
+  # "execute at %player% run particle minecraft:happy_villager ~ ~1.1 ~ 0.09 0.5 0.6 0.5 0.1 100"
+  win:
+    particles:
+      halo:
+        type: happy_villager
+        shape: HELIX
+        count: 30
+        radius: 0.7
+        height: 2.2
+        turns: 3
+        duration-ticks: 20
+        interval-ticks: 2
+        rotation-per-tick: 18
+        follow-player: true
+      sparkle:
+        type: end_rod
+        shape: CIRCLE
+        count: 12
+        radius: 1.0
+        offset:
+          y: 0.2
+        duration-ticks: 20
+        interval-ticks: 4
+    sounds:
+      levelup:
+        sound: ENTITY_PLAYER_LEVELUP
+        volume: 1.0
+        pitch: 1.0
+
+  # Effet de super victoire (uniquement si la fiole a "super-odds" et "super-reward").
+  super_win:
+    particles:
+      pillar:
+        type: totem_of_undying
+        shape: PILLAR
+        count: 40
+        radius: 0.5
+        height: 3.0
+        duration-ticks: 40
+        interval-ticks: 2
+      ring:
+        type: dust
+        shape: RING_EXPANDING
+        count: 40
+        radius: 3.0
+        color: "#FFD700"
+        size: 1.4
+        duration-ticks: 30
+        interval-ticks: 2
+        follow-player: false
+    sounds:
+      levelup:
+        sound: ENTITY_PLAYER_LEVELUP
+        volume: 1.0
+        pitch: 1.4
+      fireworks:
+        sound: ENTITY_FIREWORK_ROCKET_BLAST
+        volume: 1.0
+        pitch: 1.0
+        delay-ticks: 5
+
+  # Effet de defaite. Les effets de potion reprennent les anciennes options
+  # "drunkEffect" et "blindnessEffect" de GambleBarPro (3 secondes chacun).
+  lose:
+    particles:
+      smoke:
+        type: smoke_normal
+        shape: SPHERE
+        count: 25
+        radius: 0.6
+        duration-ticks: 10
+        interval-ticks: 2
+        at-eye-level: true
+    sounds:
+      hurt:
+        sound: ENTITY_PLAYER_HURT
+        volume: 1.0
+        pitch: 1.0
+    potion-effects:
+      drunk:
+        type: CONFUSION
+        duration-ticks: 60
+        amplifier: 1
+      blindness:
+        type: BLINDNESS
+        duration-ticks: 60
+        amplifier: 1

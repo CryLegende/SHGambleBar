@@ -1,0 +1,343 @@
+# ==========================================================================================
+#  Bar principal - reprise a l'identique des fioles de GambleBarPro
+# ==========================================================================================
+#  IMPORTANT : les champs "name" et "lore" sont ce qui permet de reconnaitre les anciennes
+#  fioles GambleBarPro deja possedees par les joueurs (voir "legacy-compatibility" dans
+#  config.yml). Les modifier rendra les anciennes fioles inutilisables.
+#
+#  Chaque fichier .yml de ce dossier est un bar. Le nom du fichier (sans .yml) est
+#  l'identifiant du bar, utilise par /bar <barId> et /bar give <joueur> <barId> <fioleId>.
+#
+#  Options d'un bar :
+#    title              Titre de l'inventaire
+#    size               Taille (multiple de 9, de 9 a 54)
+#    permission         Permission requise pour ouvrir ce bar (vide = libre)
+#    default-currency   VAULT (monnaie du serveur) ou EXP (points d'XP bruts)
+#    default-animation  NONE, TITLE ou ROULETTE (par defaut : animation.default-type)
+#
+#  Options d'une decoration (items sans effet, sous "decoration") :
+#    material           Materiau (nom Bukkit, ex : BLACK_STAINED_GLASS_PANE)
+#    name / lore        Nom et description
+#    custom-model-data  Modele personnalise (texture pack)
+#    slots              Liste des emplacements, ex : [0, 2, 4] (ou "slot" pour un seul)
+#
+#  Options d'une fiole :
+#    slot               Emplacement dans l'inventaire (obligatoire)
+#    name / lore        Nom et description
+#    material           Materiau (POTION par defaut, nom Bukkit)
+#    custom-model-data  Modele personnalise (texture pack)
+#    potion-color       RED BLUE AQUA BLACK FUCHSIA GRAY GREEN LIME MAROON NAVY OLIVE
+#                       ORANGE PURPLE SILVER TEAL WHITE YELLOW, ou un code #RRGGBB
+#    glow               true pour l'effet enchante
+#    currency           VAULT ou EXP (par defaut : default-currency du bar)
+#    price              Prix d'achat
+#    reward             Gain en cas de victoire
+#    odds               Probabilite de victoire, en pourcentage (ex : 48.00)
+#    super-reward       Gain d'une super victoire (0 = desactive)
+#    super-odds         Probabilite de super victoire, en pourcentage (0 = desactive)
+#    permission         Permission requise pour acheter/boire cette fiole (vide = libre)
+#    cooldown-seconds   Cooldown specifique a cette fiole (-1 = cooldown global)
+#    animation          NONE (immediat), TITLE (titre anime) ou ROULETTE (GUI qui defile)
+#                       (par defaut : default-animation du bar)
+#    effects.win        Nom de l'effet joue en cas de victoire (par defaut : win)
+#    effects.super-win  Nom de l'effet joue en cas de super victoire (defaut : super_win)
+#    effects.lose       Nom de l'effet joue en cas de defaite (par defaut : lose)
+#                       Ces noms renvoient a la section "effects" de config.yml : particules,
+#                       sons et effets de potion s'y configurent entierement.
+#    win-actions        Actions executees en cas de victoire
+#    super-win-actions  Actions executees en cas de super victoire
+#    lose-actions       Actions executees en cas de defaite
+#
+#  --- Actions disponibles -----------------------------------------------------------------
+#    [message] <texte>                Message au joueur (type par defaut si aucune balise)
+#    [broadcast] <texte>              Message a tout le serveur
+#    [actionbar] <texte>              Barre d'action du joueur
+#    [actionbar-all] <texte>          Barre d'action de tout le serveur
+#    [title] <titre>;<sous-titre>;<fadeIn>;<stay>;<fadeOut>   Titre au joueur (durees en ticks)
+#    [title-all] <titre>;<sous-titre>;<fadeIn>;<stay>;<fadeOut>   Titre a tout le serveur
+#    [sound] <SON>;<volume>;<pitch>   Son pour le joueur
+#    [sound-all] <SON>;<volume>;<pitch>   Son pour tout le serveur
+#    [console] <commande>             Commande executee depuis la console
+#    [player] <commande>              Commande executee au nom du joueur
+#    [delay] <ticks>                  Decale toutes les actions suivantes
+#
+#  Sous-titre et durees d'un [title] sont optionnels (par defaut : 10;40;10).
+#  Volume et pitch d'un [sound] sont optionnels (par defaut : 1.0;1.0).
+#  Les sons acceptent le nom Bukkit (ENTITY_PLAYER_LEVELUP) ou la cle (entity.player.levelup).
+#  Placeholders : %player% %drink% %reward% %payout% %price% %odds% %bar% %drink_id%
+# ==========================================================================================
+
+title: "&8&lMenu &8| Parieur"
+size: 45
+permission: ""
+default-currency: VAULT
+
+decoration:
+  noir:
+    material: BLACK_STAINED_GLASS_PANE
+    name: " "
+    slots: [0, 2, 4, 6, 8, 18, 26, 36, 38, 40, 42, 44]
+  rouge:
+    material: RED_STAINED_GLASS_PANE
+    name: " "
+    slots: [1, 3, 5, 7, 9, 17, 27, 35, 37, 39, 41, 43]
+  gris:
+    material: GRAY_STAINED_GLASS_PANE
+    name: " "
+    slots: [10, 11, 15, 16, 19, 25, 28, 29, 33, 34]
+
+drinks:
+
+  coca:
+    slot: 12
+    name: "&6Coca"
+    lore:
+      - ""
+      - "&8&l« &7Achetez un &6Coca &7pour"
+      - "&6500 SHCoins &7et tentez de"
+      - "&7gagner &6le double &7en le buvant &8&l»"
+      - ""
+      - "&8• &fChance: &650%"
+      - "&8• &fPrix: &6500 SHCoins"
+      - "&8• &fRécompense: &61,000 SHCoins"
+      - ""
+      - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+    custom-model-data: 1
+    potion-color: MAROON
+    price: 500
+    reward: 1000
+    odds: 50.00
+    win-actions:
+      - "[message] &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+
+  pastis:
+    slot: 13
+    name: "&ePastis"
+    lore:
+      - ""
+      - "&8&l« &7Achetez un &ePastis &7pour"
+      - "&e2,500 SHCoins &7et tentez de"
+      - "&7gagner &ele double &7en le buvant &8&l»"
+      - ""
+      - "&8• &fChance: &e49%"
+      - "&8• &fPrix: &e2,500 SHCoins"
+      - "&8• &fRécompense: &e5,000 SHCoins"
+      - ""
+      - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+    custom-model-data: 2
+    potion-color: YELLOW
+    price: 2500
+    reward: 5000
+    odds: 49.00
+    win-actions:
+      - "[message] &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+
+  jagermeister:
+    slot: 14
+    name: "&#39EE86J&#35D768ä&#32C049g&#2EA92Be&#2A920Cr"
+    lore:
+      - ""
+      - "&8&l« &7Achetez du &#39EE86J&#38E67Bä&#36DD70g&#35D565e&#34CD5Ar&#32C44Fm&#31BC43e&#2FB338i&#2EAB2Ds&#2DA322t&#2B9A17e&#2A920Cr &7pour"
+      - "&#39EE867&#38E67C,&#37DF725&#35D7680&#34CF5D0 &#32C049S&#30B83FH&#2FB135C&#2EA92Bo&#2DA120i&#2B9A16n&#2A920Cs &7et tentez de"
+      - "&7gagner &#39EE86l&#37E377e &#33CC58d&#32C049o&#30B53Au&#2EA92Bb&#2C9E1Bl&#2A920Ce &7en le buvant &8&l»"
+      - ""
+      - "&8• &fChance: &#39EE864&#32C0498&#2A920C%"
+      - "&8• &fPrix: &#39EE867&#38E67C,&#37DF725&#35D7680&#34CF5D0 &#32C049S&#30B83FH&#2FB135C&#2EA92Bo&#2DA120i&#2B9A16n&#2A920Cs"
+      - "&8• &fRécompense: &#39EE861&#38E77D5&#37E073,&#36D96A0&#34D2600&#33CB570 &#31BC44S&#30B53BH&#2FAE32C&#2DA728o&#2CA01Fi&#2B9915n&#2A920Cs"
+      - ""
+      - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+    custom-model-data: 2
+    potion-color: GREEN
+    price: 7500
+    reward: 15000
+    odds: 48.00
+    win-actions:
+      - "[message] &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+
+  tequila:
+    slot: 20
+    name: "&cTequila"
+    lore:
+      - ""
+      - "&8&l« &7Achetez un &cTequila &7pour"
+      - "&c10,000 SHCoins &7et tentez de"
+      - "&7gagner &cle double &7en le buvant &8&l»"
+      - ""
+      - "&8• &fChance: &c48%"
+      - "&8• &fPrix: &c10,000 SHCoins"
+      - "&8• &fRécompense: &c20,000 SHCoins"
+      - ""
+      - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+    custom-model-data: 3
+    potion-color: RED
+    price: 10000
+    reward: 20000
+    odds: 48.00
+    win-actions:
+      - "[message] &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+
+  vodka:
+    slot: 21
+    name: "&9&lVodka"
+    lore:
+      - ""
+      - "&8&l« &7Achetez un &9Vodka &7pour"
+      - "&930,000 SHCoins &7et tentez de"
+      - "&7gagner &9le double &7en le buvant &8&l»"
+      - ""
+      - "&8• &fChance: &946%"
+      - "&8• &fPrix: &930,000 SHCoins"
+      - "&8• &fRécompense: &960,000 SHCoins"
+      - ""
+      - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+    custom-model-data: 3
+    potion-color: BLUE
+    price: 30000
+    reward: 60000
+    odds: 46.00
+    win-actions:
+      - "[message] &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+
+  truc:
+    slot: 23
+    name: "&5Truc qui met mal"
+    lore:
+      - ""
+      - "&8&l« &7Achetez un &5truc &7pour"
+      - "&575,000 SHCoins &7et tentez de"
+      - "&7gagner &5le double &7en le buvant &8&l»"
+      - ""
+      - "&8• &fChance: &545%"
+      - "&8• &fPrix: &575,000 SHCoins"
+      - "&8• &fRécompense: &5150,000 SHCoins"
+      - ""
+      - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+    custom-model-data: 3
+    potion-color: FUCHSIA
+    price: 75000
+    reward: 150000
+    odds: 45.00
+    win-actions:
+      - "[message] &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+
+  champagne:
+    slot: 24
+    name: "&2Champagne"
+    lore:
+      - ""
+      - "&8&l« &7Achetez un &2Champagne &7pour"
+      - "&2125,000 SHCoins &7et tentez de"
+      - "&7gagner &2le double &7en le buvant &8&l»"
+      - ""
+      - "&8• &fChance: &245%"
+      - "&8• &fPrix: &2125,000 SHCoins"
+      - "&8• &fRécompense: &2250,000 SHCoins"
+      - ""
+      - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+    custom-model-data: 3
+    potion-color: PURPLE
+    price: 125000
+    reward: 250000
+    odds: 45.00
+    win-actions:
+      - "[message] &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+
+  chartreuse:
+    slot: 30
+    name: "&aChartreuse"
+    lore:
+      - ""
+      - "&8&l« &7Achetez une &aChartreuse &7pour"
+      - "&a250,000 SHCoins &7et tentez de"
+      - "&7gagner &ale double &7en le buvant &8&l»"
+      - ""
+      - "&8• &fChance: &a44%"
+      - "&8• &fPrix: &a250,000 SHCoins"
+      - "&8• &fRécompense: &a500,000 SHCoins"
+      - ""
+      - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+    custom-model-data: 3
+    potion-color: OLIVE
+    price: 250000
+    reward: 500000
+    odds: 44.00
+    win-actions:
+      - "[message] &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+
+  sake:
+    slot: 31
+    name: "&7Saké"
+    lore:
+      - ""
+      - "&8&l« &7Achetez un Saké pour"
+      - "&7750,000 SHCoins &7et tentez de"
+      - "&7gagner &7le double &7en le buvant &8&l»"
+      - ""
+      - "&8• &fChance: &743%"
+      - "&8• &fPrix: &7750,000 SHCoins"
+      - "&8• &fRécompense: &71,500,000 SHCoins"
+      - ""
+      - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+    custom-model-data: 3
+    potion-color: SILVER
+    price: 750000
+    reward: 1500000
+    odds: 43.00
+    win-actions:
+      - "[message] &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+
+  aie:
+    slot: 32
+    name: "&8&lAïe"
+    lore:
+      - ""
+      - "&8&l« &7Aïe... &8&l»"
+      - ""
+      - "&8• &fChance: &840%"
+      - "&8• &fPrix: &82,500,000 SHCoins"
+      - "&8• &fRécompense: &85,000,000 SHCoins"
+      - ""
+      - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+    custom-model-data: 3
+    potion-color: BLACK
+    price: 2500000
+    reward: 5000000
+    odds: 40.00
+    win-actions:
+      - "[message] &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward% SHCoins&7."
+      - "[actionbar-all] &7&l« &c&lParieur &8• &c%player% &fgagne la boisson &8&lAïe &8(&a+%reward% SHCoins&8) &8&l»"
+    lose-actions:
+      - "[actionbar-all] &7&l« &c&lParieur &8• &c%player% &fa perdu la boisson &8&lAïe &8&l»"
+
+  # ----------------------------------------------------------------------------------------
+  #  Exemple de fiole misant des points d'XP au lieu de la monnaie du serveur.
+  #  %price% / %reward% dans le lore sont remplaces automatiquement.
+  # ----------------------------------------------------------------------------------------
+  xp_shot:
+    slot: 22
+    name: "&b&lShot d'XP"
+    lore:
+      - ""
+      - "&8&l« &7Misez &b%price% points d'XP"
+      - "&7et tentez de gagner &ble double &8&l»"
+      - ""
+      - "&8• &fChance: &b%odds%%"
+      - "&8• &fPrix: &b%price% XP"
+      - "&8• &fRécompense: &b%reward% XP"
+      - ""
+      - "&7&o(( &f&oCliquez &7&opour acheter/utiliser &7&o))"
+    material: POTION
+    potion-color: AQUA
+    currency: EXP
+    price: 250
+    reward: 500
+    odds: 45.00
+    animation: ROULETTE
+    # Exemple montrant les differents types d'actions.
+    win-actions:
+      - "[message] &7&l« &a&lSH &8&l» &7Vous gagnez &a&l%reward%&7."
+      - "[title] &a&lGAGNE;&7+%payout%;5;40;10"
+      - "[sound] ENTITY_PLAYER_LEVELUP;1.0;1.2"
+    lose-actions:
+      - "[title] &c&lPERDU;&7-%price%;5;40;10"
+      - "[sound] ENTITY_VILLAGER_NO;1.0;0.8"
