@@ -195,7 +195,7 @@ public class RouletteAnimation implements DrinkAnimation {
                 : name.replace("%drink%", ColorUtils.colorize(drink.getName()));
             meta.setDisplayName(ColorUtils.colorize(display));
             if (customModelData != null) meta.setCustomModelData(customModelData);
-            meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES);
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES);
             stack.setItemMeta(meta);
         }
         return stack;

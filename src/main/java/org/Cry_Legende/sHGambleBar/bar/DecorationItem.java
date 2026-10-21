@@ -48,7 +48,7 @@ public class DecorationItem {
             if (section.contains("custom-model-data")) {
                 meta.setCustomModelData(section.getInt("custom-model-data"));
             }
-            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_POTION_EFFECTS);
+            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
             item.setItemMeta(meta);
         }
 

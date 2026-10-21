@@ -78,9 +78,9 @@ public class DrinkItemFactory {
             meta.setCustomModelData(drink.getCustomModelData());
         }
         if (drink.isGlow()) {
-            meta.addEnchant(Enchantment.DURABILITY, 1, true);
+            meta.addEnchant(Enchantment.UNBREAKING, 1, true);
         }
-        meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES);
 
         meta.getPersistentDataContainer().set(drinkKey, PersistentDataType.STRING, drink.getKey());
 
