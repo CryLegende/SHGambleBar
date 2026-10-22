@@ -43,11 +43,15 @@ Utilisé sur : **Opale**.
 
 ## Configuration
 
-Fichiers par défaut repris du serveur (secrets remplacés par `CHANGE_ME`) :
+Fichiers par défaut repris du serveur (secrets remplacés par `CHANGE_ME`). Cliquez sur un fichier pour l'ouvrir :
 
-- `bars/mainbar.yml`
-- `config.yml`
-- `messages.yml`
+<pre>
+plugins/SHGambleBar/
+├── <a href="src/main/resources/config.yml">config.yml</a>
+├── <a href="src/main/resources/messages.yml">messages.yml</a>
+└── bars/
+    └── <a href="src/main/resources/bars/mainbar.yml">mainbar.yml</a>
+</pre>
 
 ## Compilation
 
