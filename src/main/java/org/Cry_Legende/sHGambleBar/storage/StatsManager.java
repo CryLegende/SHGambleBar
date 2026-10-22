@@ -124,8 +124,13 @@ public class StatsManager {
 
         if (expiry == null || expiry < now) {
             leaderboardExpiry.put(key, now + plugin.getConfigManager().getTopCacheSeconds() * 1000L);
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin,
-                () -> leaderboards.put(key, database.getTop(column, limit)));
+            if (leaderboards.containsKey(key)) {
+                plugin.getServer().getScheduler().runTaskAsynchronously(plugin,
+                    () -> leaderboards.put(key, database.getTop(column, limit)));
+            } else {
+                // Premier appel : sans chargement immédiat, le placeholder afficherait « - » jusqu'au rafraîchissement
+                leaderboards.put(key, database.getTop(column, limit));
+            }
         }
         return leaderboards.getOrDefault(key, List.of());
     }
@@ -136,14 +141,20 @@ public class StatsManager {
         long now = System.currentTimeMillis();
         if (serverTotalsExpiry < now) {
             serverTotalsExpiry = now + plugin.getConfigManager().getTopCacheSeconds() * 1000L;
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+            Runnable load = () -> {
                 Map<String, Long> totals = new HashMap<>();
                 for (String col : new String[]{"drinks", "wins", "super_wins", "losses",
                     "wagered_money", "won_money", "wagered_exp", "won_exp"}) {
                     totals.put(col, database.getServerTotal(col));
                 }
                 serverTotals.putAll(totals);
-            });
+            };
+            // Premier appel : chargement immédiat, sinon le placeholder afficherait 0
+            if (serverTotals.isEmpty()) {
+                load.run();
+            } else {
+                plugin.getServer().getScheduler().runTaskAsynchronously(plugin, load);
+            }
         }
         return serverTotals.getOrDefault(column, 0L);
     }
