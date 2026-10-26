@@ -167,6 +167,47 @@ public class PlayerStats {
         return drinks == 0 ? 0.0 : (wins * 100.0) / drinks;
     }
 
+    /**
+     * Copie figee, prise sur le thread principal, pour une ecriture asynchrone.
+     */
+    public PlayerStats snapshot() {
+        PlayerStats copy = new PlayerStats(uuid, name);
+        copy.restore(drinks, wins, superWins, losses, wageredMoney, wonMoney, wageredExp, wonExp,
+            biggestWinMoney, biggestWinExp, currentStreak, bestStreak, lastPlayed);
+        return copy;
+    }
+
+    /**
+     * Ajoute aux stats chargees depuis la base les parties jouees avant la fin du chargement
+     * (enregistrees dans une entree vide creee entre-temps), au lieu de les ecraser.
+     */
+    void absorb(PlayerStats session) {
+        drinks += session.drinks;
+        wins += session.wins;
+        superWins += session.superWins;
+        losses += session.losses;
+        wageredMoney += session.wageredMoney;
+        wonMoney += session.wonMoney;
+        wageredExp += session.wageredExp;
+        wonExp += session.wonExp;
+        biggestWinMoney = Math.max(biggestWinMoney, session.biggestWinMoney);
+        biggestWinExp = Math.max(biggestWinExp, session.biggestWinExp);
+        if (session.drinks > 0) {
+            // La serie de la session prolonge celle de la base si elle ne contient que des victoires
+            // (ou que des defaites) dans le meme sens.
+            boolean allWins = session.wins == session.drinks;
+            boolean allLosses = session.losses == session.drinks;
+            if ((allWins && currentStreak > 0) || (allLosses && currentStreak < 0)) {
+                currentStreak += session.currentStreak;
+            } else {
+                currentStreak = session.currentStreak;
+            }
+        }
+        bestStreak = Math.max(Math.max(bestStreak, session.bestStreak), currentStreak);
+        lastPlayed = Math.max(lastPlayed, session.lastPlayed);
+        dirty = true;
+    }
+
     void restore(long drinks, long wins, long superWins, long losses, long wageredMoney, long wonMoney,
                  long wageredExp, long wonExp, long biggestWinMoney, long biggestWinExp,
                  long currentStreak, long bestStreak, long lastPlayed) {

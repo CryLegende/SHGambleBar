@@ -243,6 +243,7 @@ public class GambleService {
     public void handleQuit(Player player) {
         frozenUntil.remove(player.getUniqueId());
         gambling.remove(player.getUniqueId());
+        plugin.getCooldownManager().forgetExpired(player.getUniqueId());
     }
 
     // --- Utilitaires ---

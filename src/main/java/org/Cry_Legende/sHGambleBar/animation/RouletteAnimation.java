@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
 
 /**
  * Roulette en GUI : une bande de symboles defile puis ralentit
@@ -119,7 +120,11 @@ public class RouletteAnimation implements DrinkAnimation {
      */
     public void finishAll() {
         for (Session session : new ArrayList<>(sessions.values())) {
-            session.finish();
+            try {
+                session.finish();
+            } catch (RuntimeException e) {
+                plugin.getLogger().log(Level.SEVERE, "Solde de la roulette de " + session.player.getName() + " echoue.", e);
+            }
         }
     }
 
@@ -281,7 +286,10 @@ public class RouletteAnimation implements DrinkAnimation {
 
         private void reveal() {
             if (done) return;
-            if (closeOnReveal && player.isOnline()) {
+            // Ne ferme que la roulette : si le joueur a ouvert autre chose entre-temps
+            // (ou si l'ouverture du GUI a ete refusee), on ne lui ferme pas son inventaire.
+            if (closeOnReveal && player.isOnline()
+                && player.getOpenInventory().getTopInventory().getHolder(false) == holder) {
                 holder.setClosedByPlugin(true);
                 player.closeInventory();
             }

@@ -2,15 +2,20 @@ package org.Cry_Legende.sHGambleBar.animation;
 
 import org.Cry_Legende.sHGambleBar.SHGambleBar;
 import org.Cry_Legende.sHGambleBar.bar.Drink;
+import org.Cry_Legende.sHGambleBar.effect.SoundCue;
 import org.Cry_Legende.sHGambleBar.game.GambleResult;
 import org.Cry_Legende.sHGambleBar.util.ColorUtils;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Level;
 
 /**
  * Suspense via title/subtitle : une suite d'images defile avec un son
@@ -19,6 +24,7 @@ import java.util.Locale;
 public class TitleAnimation implements DrinkAnimation {
 
     private final SHGambleBar plugin;
+    private final Map<UUID, Session> sessions = new HashMap<>();
 
     public TitleAnimation(SHGambleBar plugin) {
         this.plugin = plugin;
@@ -56,26 +62,37 @@ public class TitleAnimation implements DrinkAnimation {
         float basePitch = (float) section.getDouble("tick-sound.pitch", 0.8D);
         float pitchStep = (float) section.getDouble("tick-sound.pitch-step", 0.02D);
         boolean soundEnabled = section.getBoolean("tick-sound.enabled", true);
-        String soundKey = resolveSound(soundName);
+        String soundKey = SoundCue.resolveKey(soundName);
 
         boolean freeze = section.getBoolean("freeze-player", false);
         if (freeze) {
             plugin.getGambleService().freeze(player, duration);
         }
 
-        new BukkitRunnable() {
+        // Une seule animation a la fois par joueur : la precedente est soldee.
+        Session running = sessions.get(player.getUniqueId());
+        if (running != null) {
+            running.finish();
+        }
+        Session session = new Session(player, onReveal);
+        sessions.put(player.getUniqueId(), session);
+
+        session.task = new BukkitRunnable() {
             int frame = 0;
 
             @Override
             public void run() {
-                if (!player.isOnline()) {
+                if (session.done) {
                     cancel();
                     return;
                 }
+                if (!player.isOnline()) {
+                    session.finish();
+                    return;
+                }
                 if (frame >= totalFrames) {
-                    cancel();
                     player.resetTitle();
-                    onReveal.run();
+                    session.finish();
                     return;
                 }
 
@@ -94,19 +111,54 @@ public class TitleAnimation implements DrinkAnimation {
         }.runTaskTimer(plugin, 0L, interval);
     }
 
+    /**
+     * Deconnexion : le resultat est applique tout de suite (le joueur a deja paye).
+     * Avant, la tache s'arretait sans reveler et un gain etait perdu.
+     */
+    @Override
+    public void cancel(Player player) {
+        Session session = sessions.get(player.getUniqueId());
+        if (session != null) session.finish();
+    }
+
+    /**
+     * Arret du plugin : les taches sont annulees par le serveur, on solde donc les animations en cours.
+     */
+    public void finishAll() {
+        for (Session session : new ArrayList<>(sessions.values())) {
+            try {
+                session.finish();
+            } catch (RuntimeException e) {
+                plugin.getLogger().log(Level.SEVERE, "Solde de l'animation de " + session.player.getName() + " echoue.", e);
+            }
+        }
+    }
+
     private String apply(String template, String frame, String drinkName) {
         return template.replace("%frame%", frame).replace("%drink%", drinkName);
     }
 
-    private String resolveSound(String raw) {
-        String clean = raw.trim();
-        if (clean.contains(".") || clean.contains(":")) {
-            return clean.toLowerCase(Locale.ROOT);
+    /**
+     * Une animation en cours. La revelation est appliquee exactement une fois.
+     */
+    private class Session {
+
+        private final Player player;
+        private final Runnable onReveal;
+        private boolean done;
+        private BukkitTask task;
+
+        Session(Player player, Runnable onReveal) {
+            this.player = player;
+            this.onReveal = onReveal;
         }
-        try {
-            return Sound.valueOf(clean.toUpperCase(Locale.ROOT)).getKey().toString();
-        } catch (IllegalArgumentException e) {
-            return clean.toLowerCase(Locale.ROOT).replace('_', '.');
+
+        void finish() {
+            if (done) return;
+            done = true;
+            if (task != null) task.cancel();
+            sessions.remove(player.getUniqueId(), this);
+            onReveal.run();
         }
     }
 }

@@ -1,6 +1,8 @@
 package org.Cry_Legende.sHGambleBar;
 
 import org.Cry_Legende.sHGambleBar.animation.AnimationManager;
+import org.Cry_Legende.sHGambleBar.animation.RouletteHolder;
+import org.Cry_Legende.sHGambleBar.bar.BarHolder;
 import org.Cry_Legende.sHGambleBar.bar.BarManager;
 import org.Cry_Legende.sHGambleBar.command.GambleBarCommand;
 import org.Cry_Legende.sHGambleBar.config.ConfigManager;
@@ -17,6 +19,7 @@ import org.Cry_Legende.sHGambleBar.listener.RouletteListener;
 import org.Cry_Legende.sHGambleBar.storage.StatsManager;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SHGambleBar extends JavaPlugin {
@@ -59,8 +62,23 @@ public final class SHGambleBar extends JavaPlugin {
     @Override
     public void onDisable() {
         if (animationManager != null) animationManager.shutdown();
+        closePluginInventories();
         if (statsManager != null) statsManager.saveAllSync();
         getLogger().info("SHGambleBar desactive.");
+    }
+
+    /**
+     * Une fois le plugin desactive, plus rien n'annule les clics : un bar ou une roulette reste
+     * ouvert permettrait de prendre les fioles (identifiees par leur NBT, donc encore valides apres
+     * un rechargement) ou les symboles. On les ferme donc avant de s'arreter.
+     */
+    private void closePluginInventories() {
+        for (Player player : getServer().getOnlinePlayers()) {
+            InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder(false);
+            if (holder instanceof BarHolder || holder instanceof RouletteHolder) {
+                player.closeInventory();
+            }
+        }
     }
 
     private void registerCommand() {

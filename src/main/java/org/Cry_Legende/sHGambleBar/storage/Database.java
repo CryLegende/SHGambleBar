@@ -108,7 +108,10 @@ public class Database {
         }
     }
 
-    public void save(PlayerStats stats) {
+    /**
+     * @return true si l'ecriture a reussi.
+     */
+    public boolean save(PlayerStats stats) {
         String sql = """
             INSERT INTO player_stats (uuid, name, drinks, wins, super_wins, losses, wagered_money,
                 won_money, wagered_exp, won_exp, biggest_win_money, biggest_win_exp,
@@ -148,8 +151,10 @@ public class Database {
             statement.setLong(15, stats.getLastPlayed());
             statement.executeUpdate();
             stats.clearDirty();
+            return true;
         } catch (SQLException e) {
             plugin.getLogger().log(Level.SEVERE, "Sauvegarde des stats de " + stats.getUuid() + " echouee.", e);
+            return false;
         }
     }
 

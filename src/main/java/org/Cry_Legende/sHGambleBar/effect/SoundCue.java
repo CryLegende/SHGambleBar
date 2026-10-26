@@ -1,6 +1,8 @@
 package org.Cry_Legende.sHGambleBar.effect;
 
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -36,7 +38,7 @@ public class SoundCue {
 
     public static SoundCue load(ConfigurationSection section) {
         return new SoundCue(
-            resolve(section.getString("sound", "ENTITY_PLAYER_LEVELUP")),
+            resolveKey(section.getString("sound", "ENTITY_PLAYER_LEVELUP")),
             (float) section.getDouble("volume", 1.0),
             (float) section.getDouble("pitch", 1.0),
             (float) section.getDouble("pitch-step", 0.0),
@@ -49,17 +51,23 @@ public class SoundCue {
 
     /**
      * Accepte le nom Bukkit (ENTITY_PLAYER_LEVELUP) ou la cle Minecraft (entity.player.levelup).
+     * Partage par les actions [sound] et l'animation TITLE.
+     * Sound.valueOf / Sound#getKey sont marques pour suppression : le nom est lu par reflexion
+     * et la cle via le registre des sons.
      */
-    private static String resolve(String raw) {
+    public static String resolveKey(String raw) {
         String clean = raw.trim();
         if (clean.contains(".") || clean.contains(":")) {
             return clean.toLowerCase(Locale.ROOT);
         }
         try {
-            return Sound.valueOf(clean.toUpperCase(Locale.ROOT)).getKey().toString();
-        } catch (IllegalArgumentException e) {
-            return clean.toLowerCase(Locale.ROOT).replace('_', '.');
+            Sound sound = (Sound) Sound.class.getField(clean.toUpperCase(Locale.ROOT)).get(null);
+            NamespacedKey key = sound == null ? null : Registry.SOUND_EVENT.getKey(sound);
+            if (key != null) return key.toString();
+        } catch (ReflectiveOperationException | ClassCastException ignored) {
+            // Nom inconnu : repli ci-dessous, comme avant.
         }
+        return clean.toLowerCase(Locale.ROOT).replace('_', '.');
     }
 
     public int getDelayTicks() {

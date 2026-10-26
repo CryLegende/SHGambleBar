@@ -12,6 +12,8 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 /**
  * Protege le GUI de la roulette : aucun clic possible, et si le joueur ferme
  * l'inventaire avant la fin, le resultat est applique immediatement.
+ * getHolder(false) : ces handlers voient tous les inventaires du serveur, sans
+ * instantane de bloc a chaque clic dans un coffre.
  */
 public class RouletteListener implements Listener {
 
@@ -23,21 +25,21 @@ public class RouletteListener implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        if (event.getInventory().getHolder() instanceof RouletteHolder) {
+        if (event.getInventory().getHolder(false) instanceof RouletteHolder) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
-        if (event.getInventory().getHolder() instanceof RouletteHolder) {
+        if (event.getInventory().getHolder(false) instanceof RouletteHolder) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onClose(InventoryCloseEvent event) {
-        if (!(event.getInventory().getHolder() instanceof RouletteHolder)) return;
+        if (!(event.getInventory().getHolder(false) instanceof RouletteHolder)) return;
         if (!(event.getPlayer() instanceof Player player)) return;
         plugin.getAnimationManager().getRoulette().handleClose(player);
     }

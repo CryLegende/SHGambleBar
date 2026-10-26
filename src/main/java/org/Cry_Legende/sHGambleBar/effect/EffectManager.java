@@ -74,6 +74,9 @@ public class EffectManager {
 
     public void play(Player player, Effect effect, Location anchor) {
         if (effect == null || effect.isEmpty()) return;
+        // Plugin en cours d'arret : impossible de planifier les couches, et une exception ici
+        // interromprait le solde des parties des autres joueurs.
+        if (!plugin.isEnabled()) return;
 
         for (ParticleLayer layer : effect.getParticles()) {
             runLayer(player, layer, anchor);

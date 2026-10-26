@@ -26,7 +26,9 @@ public final class ActionRunner {
                 delay += action.getDelayTicks();
                 continue;
             }
-            if (delay <= 0) {
+            // Plugin en cours d'arret (resultat solde au onDisable) : runTaskLater leverait une
+            // exception, l'action est donc executee tout de suite plutot que perdue.
+            if (delay <= 0 || !plugin.isEnabled()) {
                 dispatch(player, action, placeholders);
             } else {
                 Bukkit.getScheduler().runTaskLater(plugin,

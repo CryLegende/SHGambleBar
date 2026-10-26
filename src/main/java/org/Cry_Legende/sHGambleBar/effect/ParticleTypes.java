@@ -1,6 +1,8 @@
 package org.Cry_Legende.sHGambleBar.effect;
 
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
+import org.bukkit.Registry;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -8,80 +10,59 @@ import java.util.Map;
 
 /**
  * Resolution du nom d'une particule.
- * Accepte le nom Bukkit (VILLAGER_HAPPY), le nom Minecraft (happy_villager,
- * minecraft:happy_villager) tel qu'utilise dans la commande /particle.
+ * Accepte le nom Bukkit actuel (HAPPY_VILLAGER), l'ancien nom Bukkit (VILLAGER_HAPPY,
+ * SMOKE_NORMAL, ...) et le nom Minecraft (happy_villager, minecraft:happy_villager) tel
+ * qu'utilise dans la commande /particle.
+ * Les anciens noms Bukkit ont disparu de l'enum Particle en 1.20.5 : ils sont traduits ici
+ * vers le nom Minecraft au lieu de dependre de la reecriture de compatibilite du serveur.
  */
 public final class ParticleTypes {
 
-    private static final Map<String, Particle> ALIASES = new HashMap<>();
+    private static final Map<String, String> LEGACY = new HashMap<>();
 
     static {
-        alias("happy_villager", "VILLAGER_HAPPY");
-        alias("angry_villager", "VILLAGER_ANGRY");
-        alias("dust", "REDSTONE");
-        alias("poof", "EXPLOSION_NORMAL");
-        alias("explosion", "EXPLOSION_LARGE");
-        alias("explosion_emitter", "EXPLOSION_HUGE");
-        alias("smoke", "SMOKE_NORMAL");
-        alias("large_smoke", "SMOKE_LARGE");
-        alias("enchant", "ENCHANTMENT_TABLE");
-        alias("enchanted_hit", "CRIT_MAGIC");
-        alias("firework", "FIREWORKS_SPARK");
-        alias("totem_of_undying", "TOTEM");
-        alias("effect", "SPELL");
-        alias("instant_effect", "SPELL_INSTANT");
-        alias("entity_effect", "SPELL_MOB");
-        alias("ambient_entity_effect", "SPELL_MOB_AMBIENT");
-        alias("witch", "SPELL_WITCH");
-        alias("splash", "WATER_SPLASH");
-        alias("bubble", "WATER_BUBBLE");
-        alias("bubble_pop", "BUBBLE_POP");
-        alias("fishing", "WATER_WAKE");
-        alias("underwater", "SUSPENDED");
-        alias("dripping_water", "DRIP_WATER");
-        alias("dripping_lava", "DRIP_LAVA");
-        alias("item_slime", "SLIME");
-        alias("item_snowball", "SNOWBALL");
-        alias("block", "BLOCK_CRACK");
-        alias("block_marker", "BLOCK_MARKER");
-        alias("item", "ITEM_CRACK");
-        alias("mycelium", "TOWN_AURA");
-        alias("note", "NOTE");
-        alias("portal", "PORTAL");
-        alias("rain", "WATER_DROP");
-        alias("elder_guardian", "MOB_APPEARANCE");
-        alias("dragon_breath", "DRAGON_BREATH");
-        alias("end_rod", "END_ROD");
-        alias("damage_indicator", "DAMAGE_INDICATOR");
-        alias("sweep_attack", "SWEEP_ATTACK");
-        alias("falling_dust", "FALLING_DUST");
-        alias("spit", "SPIT");
-        alias("squid_ink", "SQUID_INK");
-        alias("crit", "CRIT");
-        alias("heart", "HEART");
-        alias("flame", "FLAME");
-        alias("soul", "SOUL");
-        alias("soul_fire_flame", "SOUL_FIRE_FLAME");
-        alias("glow", "GLOW");
-        alias("wax_on", "WAX_ON");
-        alias("wax_off", "WAX_OFF");
-        alias("electric_spark", "ELECTRIC_SPARK");
-        alias("scrape", "SCRAPE");
-        alias("cherry_leaves", "CHERRY_LEAVES");
-        alias("sculk_soul", "SCULK_SOUL");
-        alias("sculk_charge_pop", "SCULK_CHARGE_POP");
-        alias("dust_color_transition", "DUST_COLOR_TRANSITION");
+        legacy("VILLAGER_HAPPY", "happy_villager");
+        legacy("VILLAGER_ANGRY", "angry_villager");
+        legacy("REDSTONE", "dust");
+        legacy("EXPLOSION_NORMAL", "poof");
+        legacy("EXPLOSION_LARGE", "explosion");
+        legacy("EXPLOSION_HUGE", "explosion_emitter");
+        legacy("SMOKE_NORMAL", "smoke");
+        legacy("SMOKE_LARGE", "large_smoke");
+        legacy("ENCHANTMENT_TABLE", "enchant");
+        legacy("CRIT_MAGIC", "enchanted_hit");
+        legacy("FIREWORKS_SPARK", "firework");
+        legacy("TOTEM", "totem_of_undying");
+        legacy("SPELL", "effect");
+        legacy("SPELL_INSTANT", "instant_effect");
+        legacy("SPELL_MOB", "entity_effect");
+        legacy("SPELL_MOB_AMBIENT", "entity_effect");
+        legacy("SPELL_WITCH", "witch");
+        legacy("WATER_SPLASH", "splash");
+        legacy("WATER_BUBBLE", "bubble");
+        legacy("WATER_WAKE", "fishing");
+        legacy("SUSPENDED", "underwater");
+        legacy("SUSPENDED_DEPTH", "underwater");
+        legacy("DRIP_WATER", "dripping_water");
+        legacy("DRIP_LAVA", "dripping_lava");
+        legacy("SLIME", "item_slime");
+        legacy("SNOWBALL", "item_snowball");
+        legacy("SNOW_SHOVEL", "item_snowball");
+        legacy("BLOCK_CRACK", "block");
+        legacy("BLOCK_DUST", "block");
+        legacy("ITEM_CRACK", "item");
+        legacy("TOWN_AURA", "mycelium");
+        legacy("WATER_DROP", "rain");
+        legacy("MOB_APPEARANCE", "elder_guardian");
+        // Nom Minecraft retire en 1.20.5 (fusionne avec entity_effect)
+        legacy("AMBIENT_ENTITY_EFFECT", "entity_effect");
     }
 
     private ParticleTypes() {
     }
 
-    private static void alias(String minecraftName, String bukkitName) {
-        try {
-            ALIASES.put(minecraftName, Particle.valueOf(bukkitName));
-        } catch (IllegalArgumentException ignored) {
-            // La particule n'existe pas sur cette version : l'alias est simplement ignore.
-        }
+    private static void legacy(String bukkitName, String minecraftName) {
+        LEGACY.put(bukkitName.toLowerCase(Locale.ROOT), minecraftName);
     }
 
     /**
@@ -93,8 +74,11 @@ public final class ParticleTypes {
         if (clean.startsWith("minecraft:")) {
             clean = clean.substring("minecraft:".length());
         }
-        Particle alias = ALIASES.get(clean);
-        if (alias != null) return alias;
+        clean = LEGACY.getOrDefault(clean, clean);
+
+        NamespacedKey key = NamespacedKey.fromString(clean);
+        Particle particle = key == null ? null : Registry.PARTICLE_TYPE.get(key);
+        if (particle != null) return particle;
         try {
             return Particle.valueOf(clean.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {

@@ -23,7 +23,7 @@ public class BarListener implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        if (!(event.getInventory().getHolder() instanceof BarHolder holder)) return;
+        if (!(event.getInventory().getHolder(false) instanceof BarHolder holder)) return;
 
         event.setCancelled(true);
 
@@ -44,7 +44,7 @@ public class BarListener implements Listener {
 
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
-        if (event.getInventory().getHolder() instanceof BarHolder) {
+        if (event.getInventory().getHolder(false) instanceof BarHolder) {
             event.setCancelled(true);
         }
     }

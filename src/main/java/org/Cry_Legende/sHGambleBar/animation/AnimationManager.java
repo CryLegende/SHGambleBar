@@ -17,13 +17,15 @@ public class AnimationManager {
     private final Map<String, DrinkAnimation> animations = new LinkedHashMap<>();
     private final DrinkAnimation none = new NoneAnimation();
     private final RouletteAnimation roulette;
+    private final TitleAnimation title;
 
     public AnimationManager(SHGambleBar plugin) {
         this.plugin = plugin;
         this.roulette = new RouletteAnimation(plugin);
+        this.title = new TitleAnimation(plugin);
 
         register(none);
-        register(new TitleAnimation(plugin));
+        register(title);
         register(roulette);
     }
 
@@ -68,5 +70,6 @@ public class AnimationManager {
 
     public void shutdown() {
         roulette.finishAll();
+        title.finishAll();
     }
 }

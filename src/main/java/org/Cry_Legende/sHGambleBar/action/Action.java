@@ -2,9 +2,9 @@ package org.Cry_Legende.sHGambleBar.action;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.Cry_Legende.sHGambleBar.effect.SoundCue;
 import org.Cry_Legende.sHGambleBar.util.ColorUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -174,20 +174,8 @@ public class Action {
      */
     private static void playSound(Player player, String text) {
         String[] parts = text.split(";", 3);
-        player.playSound(player.getLocation(), resolveSound(parts[0].trim()),
+        player.playSound(player.getLocation(), SoundCue.resolveKey(parts[0].trim()),
             floatAt(parts, 1, 1.0f), floatAt(parts, 2, 1.0f));
-    }
-
-    /**
-     * Accepte le nom Bukkit (ENTITY_PLAYER_LEVELUP) ou la cle Minecraft (entity.player.levelup).
-     */
-    private static String resolveSound(String raw) {
-        if (raw.contains(".") || raw.contains(":")) return raw.toLowerCase(Locale.ROOT);
-        try {
-            return Sound.valueOf(raw.toUpperCase(Locale.ROOT)).getKey().toString();
-        } catch (IllegalArgumentException e) {
-            return raw.toLowerCase(Locale.ROOT).replace('_', '.');
-        }
     }
 
     private static int intAt(String[] parts, int index, int fallback) {

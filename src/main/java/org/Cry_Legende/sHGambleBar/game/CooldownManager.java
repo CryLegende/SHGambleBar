@@ -69,6 +69,18 @@ public class CooldownManager {
         cooldowns.remove(uuid);
     }
 
+    /**
+     * Deconnexion : oublie les cooldowns ecoules. Ceux encore en cours sont gardes, pour qu'une
+     * reconnexion ne permette pas de les contourner.
+     */
+    public void forgetExpired(UUID uuid) {
+        Map<String, Long> playerCooldowns = cooldowns.get(uuid);
+        if (playerCooldowns == null) return;
+        long now = System.currentTimeMillis();
+        playerCooldowns.values().removeIf(expiry -> expiry <= now);
+        if (playerCooldowns.isEmpty()) cooldowns.remove(uuid);
+    }
+
     public void clearAll() {
         cooldowns.clear();
     }

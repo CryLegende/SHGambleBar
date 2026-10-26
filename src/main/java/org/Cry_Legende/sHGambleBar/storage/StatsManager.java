@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 /**
@@ -21,6 +24,14 @@ public class StatsManager {
     private final SHGambleBar plugin;
     private final Database database;
     private final Map<UUID, PlayerStats> cache = new ConcurrentHashMap<>();
+    // Chargements et sauvegardes des joueurs passent par ce fil unique, donc dans l'ordre : une
+    // sauvegarde au quit est terminee avant le rechargement d'un joueur qui revient, et deux
+    // sauvegardes du meme joueur ne peuvent plus s'ecrire dans le desordre.
+    private final ExecutorService io = Executors.newSingleThreadExecutor(runnable -> {
+        Thread thread = new Thread(runnable, "SHGambleBar-Stats");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     private final Map<String, List<Database.LeaderboardEntry>> leaderboards = new ConcurrentHashMap<>();
     private final Map<String, Long> leaderboardExpiry = new ConcurrentHashMap<>();
@@ -61,10 +72,20 @@ public class StatsManager {
         if (!available) return;
         UUID uuid = player.getUniqueId();
         String name = player.getName();
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+        io.execute(() -> {
             PlayerStats stats = database.load(uuid, name);
             stats.setName(name);
-            cache.put(uuid, stats);
+            if (!plugin.isEnabled()) return;
+            // Mise en cache sur le thread principal : un joueur deja reparti n'est plus garde en
+            // memoire indefiniment, et une partie jouee pendant le chargement n'est plus ecrasee.
+            plugin.getServer().getScheduler().runTask(plugin, () -> {
+                if (!player.isOnline()) return;
+                PlayerStats current = cache.get(uuid);
+                if (current != null && current.isDirty()) {
+                    stats.absorb(current);
+                }
+                cache.put(uuid, stats);
+            });
         });
     }
 
@@ -72,7 +93,7 @@ public class StatsManager {
         if (!available) return;
         PlayerStats stats = cache.remove(uuid);
         if (stats == null || !stats.isDirty()) return;
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> database.save(stats));
+        io.execute(() -> database.save(stats));
     }
 
     /**
@@ -92,18 +113,41 @@ public class StatsManager {
 
     public void saveDirtyAsync() {
         if (!available) return;
-        List<PlayerStats> dirty = new ArrayList<>();
+        // Copies prises ici, sur le thread principal : l'ecriture ne lit plus des stats en cours de
+        // modification, et une partie jouee pendant l'ecriture n'est plus marquee sauvegardee a tort.
+        Map<PlayerStats, PlayerStats> dirty = new HashMap<>();
         for (PlayerStats stats : cache.values()) {
-            if (stats.isDirty()) dirty.add(stats);
+            if (stats.isDirty()) {
+                dirty.put(stats, stats.snapshot());
+                stats.clearDirty();
+            }
         }
         if (dirty.isEmpty()) return;
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> database.saveAll(dirty));
+        io.execute(() -> {
+            List<PlayerStats> failed = new ArrayList<>();
+            dirty.forEach((stats, snapshot) -> {
+                if (!database.save(snapshot)) failed.add(stats);
+            });
+            if (!failed.isEmpty() && plugin.isEnabled()) {
+                // Echec : on retentera a la prochaine sauvegarde
+                plugin.getServer().getScheduler().runTask(plugin, () -> failed.forEach(PlayerStats::markDirty));
+            }
+        });
     }
 
     /**
      * Sauvegarde bloquante : utilisee uniquement au onDisable.
      */
     public void saveAllSync() {
+        // Laisse finir les ecritures en attente avant la sauvegarde finale et la fermeture de la base
+        io.shutdown();
+        try {
+            if (!io.awaitTermination(10, TimeUnit.SECONDS)) {
+                plugin.getLogger().warning("Sauvegardes de stats en attente non terminees apres 10 s.");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         if (!available) return;
         List<PlayerStats> dirty = new ArrayList<>();
         for (PlayerStats stats : cache.values()) {
