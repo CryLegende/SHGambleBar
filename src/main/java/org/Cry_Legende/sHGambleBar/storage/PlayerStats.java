@@ -1,6 +1,7 @@
 package org.Cry_Legende.sHGambleBar.storage;
 
 import org.Cry_Legende.sHGambleBar.currency.CurrencyType;
+import org.Cry_Legende.sHGambleBar.util.NumberUtils;
 
 import java.util.UUID;
 
@@ -34,6 +35,29 @@ public class PlayerStats {
     public PlayerStats(UUID uuid, String name) {
         this.uuid = uuid;
         this.name = name;
+    }
+
+    /**
+     * Placeholders de la liste "stats" de messages.yml, partages par /bar stats et l'item des statistiques.
+     */
+    public java.util.Map<String, String> placeholders(String playerName) {
+        return java.util.Map.ofEntries(
+            java.util.Map.entry("player", playerName),
+            java.util.Map.entry("drinks", NumberUtils.format(getDrinks())),
+            java.util.Map.entry("wins", NumberUtils.format(getWins())),
+            java.util.Map.entry("super_wins", NumberUtils.format(getSuperWins())),
+            java.util.Map.entry("losses", NumberUtils.format(getLosses())),
+            java.util.Map.entry("winrate", NumberUtils.format(getWinRate())),
+            java.util.Map.entry("wagered_money", NumberUtils.format(getWageredMoney())),
+            java.util.Map.entry("won_money", NumberUtils.format(getWonMoney())),
+            java.util.Map.entry("profit_money", NumberUtils.format(getProfitMoney())),
+            java.util.Map.entry("wagered_exp", NumberUtils.format(getWageredExp())),
+            java.util.Map.entry("won_exp", NumberUtils.format(getWonExp())),
+            java.util.Map.entry("profit_exp", NumberUtils.format(getProfitExp())),
+            java.util.Map.entry("biggest_win_money", NumberUtils.format(getBiggestWinMoney())),
+            java.util.Map.entry("biggest_win_exp", NumberUtils.format(getBiggestWinExp())),
+            java.util.Map.entry("streak", NumberUtils.format(getWinStreak())),
+            java.util.Map.entry("best_streak", NumberUtils.format(getBestStreak())));
     }
 
     public UUID getUuid() {

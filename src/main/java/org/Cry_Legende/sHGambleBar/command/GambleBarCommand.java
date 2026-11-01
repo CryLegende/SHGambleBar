@@ -167,23 +167,7 @@ public class GambleBarCommand implements TabExecutor {
         }
 
         PlayerStats stats = plugin.getStatsManager().getOrCreate(target);
-        plugin.getMessageManager().sendList(sender, "stats", Map.ofEntries(
-            Map.entry("player", target.getName()),
-            Map.entry("drinks", NumberUtils.format(stats.getDrinks())),
-            Map.entry("wins", NumberUtils.format(stats.getWins())),
-            Map.entry("super_wins", NumberUtils.format(stats.getSuperWins())),
-            Map.entry("losses", NumberUtils.format(stats.getLosses())),
-            Map.entry("winrate", NumberUtils.format(stats.getWinRate())),
-            Map.entry("wagered_money", NumberUtils.format(stats.getWageredMoney())),
-            Map.entry("won_money", NumberUtils.format(stats.getWonMoney())),
-            Map.entry("profit_money", NumberUtils.format(stats.getProfitMoney())),
-            Map.entry("wagered_exp", NumberUtils.format(stats.getWageredExp())),
-            Map.entry("won_exp", NumberUtils.format(stats.getWonExp())),
-            Map.entry("profit_exp", NumberUtils.format(stats.getProfitExp())),
-            Map.entry("biggest_win_money", NumberUtils.format(stats.getBiggestWinMoney())),
-            Map.entry("biggest_win_exp", NumberUtils.format(stats.getBiggestWinExp())),
-            Map.entry("streak", NumberUtils.format(stats.getWinStreak())),
-            Map.entry("best_streak", NumberUtils.format(stats.getBestStreak()))));
+        plugin.getMessageManager().sendList(sender, "stats", stats.placeholders(target.getName()));
     }
 
     @Override

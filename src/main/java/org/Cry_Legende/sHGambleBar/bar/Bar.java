@@ -21,6 +21,7 @@ public class Bar {
     private final String defaultAnimation;
 
     private final List<DecorationItem> decoration = new ArrayList<>();
+    private StatsItem statsItem;
     private final Map<String, Drink> drinksById = new LinkedHashMap<>();
     private final Map<Integer, Drink> drinksBySlot = new LinkedHashMap<>();
 
@@ -82,7 +83,23 @@ public class Bar {
             }
         }
 
+        ConfigurationSection statsSection = section.getConfigurationSection("stats-item");
+        if (statsSection != null) {
+            StatsItem stats = StatsItem.load(statsSection, bar.size, logger);
+            if (stats != null && bar.drinksBySlot.containsKey(stats.getSlot())) {
+                logger.warning("Slot " + stats.getSlot() + " deja occupe par une fiole dans le bar '" + id
+                    + "'. Item des statistiques ignore.");
+            } else {
+                bar.statsItem = stats;
+            }
+        }
+
         return bar;
+    }
+
+    /** Item des statistiques du joueur, ou {@code null} si le bar n'en a pas. */
+    public StatsItem getStatsItem() {
+        return statsItem;
     }
 
     public String getId() {

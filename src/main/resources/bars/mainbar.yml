@@ -15,6 +15,11 @@
 #    default-currency   VAULT (monnaie du serveur) ou EXP (points d'XP bruts)
 #    default-animation  NONE, TITLE ou ROULETTE (par defaut : animation.default-type)
 #
+#  Item des statistiques du joueur (section "stats-item", facultative ; rafraichi apres chaque fiole) :
+#    slot / material / name / lore / custom-model-data   Comme une decoration (un seul slot)
+#    Placeholders : ceux de la liste "stats" de messages.yml (%drinks% %wins% %losses% %winrate%
+#    %wagered_money% %won_money% %profit_money% %biggest_win_money% %streak% %best_streak%...)
+#
 #  Options d'une decoration (items sans effet, sous "decoration") :
 #    material           Materiau (nom Bukkit, ex : BLACK_STAINED_GLASS_PANE)
 #    name / lore        Nom et description
@@ -85,6 +90,22 @@ decoration:
     material: GRAY_STAINED_GLASS_PANE
     name: " "
     slots: [10, 11, 15, 16, 19, 25, 28, 29, 33, 34]
+
+stats-item:
+  slot: 40
+  material: WRITABLE_BOOK
+  name: "&6&lMes statistiques"
+  lore:
+    - ""
+    - "&8• &7Fioles bues : &6%drinks%"
+    - "&8• &7Victoires : &a%wins% &7(&f%winrate%&7%)"
+    - "&8• &7Défaites : &c%losses%"
+    - ""
+    - "&8• &7Total misé : &6%wagered_money%"
+    - "&8• &7Total gagné : &6%won_money%"
+    - "&8• &7Bilan : &6%profit_money%"
+    - "&8• &7Plus gros gain : &6%biggest_win_money%"
+    - "&8• &7Série en cours : &6%streak% &7(record : &6%best_streak%&7)"
 
 drinks:
 

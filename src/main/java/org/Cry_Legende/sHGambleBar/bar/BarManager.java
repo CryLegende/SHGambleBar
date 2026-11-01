@@ -1,6 +1,7 @@
 package org.Cry_Legende.sHGambleBar.bar;
 
 import org.Cry_Legende.sHGambleBar.SHGambleBar;
+import org.Cry_Legende.sHGambleBar.storage.PlayerStats;
 import org.Cry_Legende.sHGambleBar.util.ColorUtils;
 import org.Cry_Legende.sHGambleBar.util.NumberUtils;
 import org.bukkit.Bukkit;
@@ -113,7 +114,7 @@ public class BarManager {
     /**
      * Construit un inventaire frais pour ce bar (jamais partage entre joueurs).
      */
-    public Inventory buildInventory(Bar bar) {
+    public Inventory buildInventory(Bar bar, Player viewer) {
         BarHolder holder = new BarHolder(bar.getId());
         Inventory inventory = Bukkit.createInventory(holder, bar.getSize(), ColorUtils.colorize(bar.getTitle()));
         holder.setInventory(inventory);
@@ -131,7 +132,25 @@ public class BarManager {
             inventory.setItem(drink.getSlot(), itemFactory.build(drink));
         }
 
+        renderStats(inventory, bar, viewer);
         return inventory;
+    }
+
+    /** Pose l'item des statistiques du joueur dans le bar (rien si le bar n'en a pas ou sans statistiques). */
+    private void renderStats(Inventory inventory, Bar bar, Player viewer) {
+        StatsItem statsItem = bar.getStatsItem();
+        if (statsItem == null || viewer == null || !plugin.getStatsManager().isAvailable()) return;
+        PlayerStats stats = plugin.getStatsManager().getOrCreate(viewer);
+        inventory.setItem(statsItem.getSlot(), statsItem.render(stats.placeholders(viewer.getName())));
+    }
+
+    /** Met a jour l'item des statistiques si le joueur a encore un bar ouvert (apres une fiole). */
+    public void refreshStats(Player player) {
+        if (player == null || !player.isOnline()) return;
+        Inventory top = player.getOpenInventory().getTopInventory();
+        if (!(top.getHolder(false) instanceof BarHolder holder)) return;
+        Bar bar = getBar(holder.getBarId());
+        if (bar != null) renderStats(top, bar, player);
     }
 
     public boolean openBar(Player player, String barId) {
@@ -154,7 +173,7 @@ public class BarManager {
             return false;
         }
 
-        player.openInventory(buildInventory(bar));
+        player.openInventory(buildInventory(bar, player));
         plugin.getMessageManager().send(player, "bar-opened", Map.of("bar", bar.getId()));
         return true;
     }

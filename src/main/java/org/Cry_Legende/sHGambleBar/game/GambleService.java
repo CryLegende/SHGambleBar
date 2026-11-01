@@ -164,6 +164,8 @@ public class GambleService {
             PlayerStats stats = plugin.getStatsManager().getOrCreate(player);
             stats.record(drink.getCurrency(), drink.getPrice(), payout, result.isWin(),
                 result == GambleResult.SUPER_WIN);
+            // Item des statistiques a jour si le joueur est reste sur le bar
+            plugin.getBarManager().refreshStats(player);
         }
 
         if (!player.isOnline()) return;
