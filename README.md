@@ -16,11 +16,13 @@
 
 Bar a paris (remplacant de GambleBarPro) - Vault, EXP, animations, stats.
 
+Chaque pari est écrit dans le fichier `paris` de SHLogs (`plugins/SHLogs/SHGambleBar/`) une fois le gain versé.
+
 Utilisé sur : **Opale**.
 
 ## Dépendances
 
-- Optionnelles : `Vault`, `PlaceholderAPI`
+- Optionnelles : `Vault`, `PlaceholderAPI`, `SHLogs`
 
 ## Commandes
 

@@ -127,6 +127,25 @@ storage:
   # Duree de mise en cache des classements et totaux serveur, en secondes.
   leaderboard-cache-seconds: 60
 
+# ------------------------------------------------------------------------------------------
+#  LOGS
+# ------------------------------------------------------------------------------------------
+#  Une ligne est ecrite dans SHLogs (plugins/SHLogs/SHGambleBar/) pour chaque pari, une fois
+#  le gain verse.
+#  Variables : %player% %drink% (nom sans couleur) %drink_id% %bar% %price% (mise)
+#  %payout% (gain) %unit% (unite de la monnaie de la fiole)
+logs:
+  bets:
+    # Nom du fichier de log.
+    file: "paris"
+    # Unite ecrite pour chaque monnaie.
+    units:
+      vault: "SHCoins"
+      exp: "EXP"
+    win: "%player% -> parie %price% %unit% (%drink%) : gagne %payout% %unit%"
+    super-win: "%player% -> parie %price% %unit% (%drink%) : super victoire, gagne %payout% %unit%"
+    lose: "%player% -> parie %price% %unit% (%drink%) : perd sa mise"
+
 # ==========================================================================================
 #  ANIMATIONS
 # ==========================================================================================

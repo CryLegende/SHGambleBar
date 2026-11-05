@@ -5,7 +5,9 @@ import org.Cry_Legende.sHGambleBar.action.ActionRunner;
 import org.Cry_Legende.sHGambleBar.animation.DrinkAnimation;
 import org.Cry_Legende.sHGambleBar.bar.Drink;
 import org.Cry_Legende.sHGambleBar.currency.Currency;
+import org.Cry_Legende.sHGambleBar.currency.CurrencyType;
 import org.Cry_Legende.sHGambleBar.storage.PlayerStats;
+import org.Cry_Legende.sHGambleBar.util.ActionLog;
 import org.Cry_Legende.sHGambleBar.util.ColorUtils;
 import org.Cry_Legende.sHGambleBar.util.NumberUtils;
 import org.bukkit.entity.Player;
@@ -14,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -156,8 +159,12 @@ public class GambleService {
             case LOSE -> 0L;
         };
 
+        boolean credited = payout <= 0;
         if (payout > 0 && player.isOnline()) {
-            currency.deposit(player, payout);
+            credited = currency.deposit(player, payout);
+        }
+        if (credited) {
+            logBet(player, drink, result, payout);
         }
 
         if (plugin.getStatsManager().isAvailable()) {
@@ -192,6 +199,34 @@ public class GambleService {
                 ActionRunner.run(plugin, player, drink.getLoseActions(), placeholders);
             }
         }
+    }
+
+    /**
+     * Ecrit le pari dans SHLogs une fois le gain verse.
+     */
+    private void logBet(Player player, Drink drink, GambleResult result, long payout) {
+        String key = switch (result) {
+            case SUPER_WIN -> "super-win";
+            case WIN -> "win";
+            case LOSE -> "lose";
+        };
+        String fallback = switch (result) {
+            case SUPER_WIN -> "%player% -> parie %price% %unit% (%drink%) : super victoire, gagne %payout% %unit%";
+            case WIN -> "%player% -> parie %price% %unit% (%drink%) : gagne %payout% %unit%";
+            case LOSE -> "%player% -> parie %price% %unit% (%drink%) : perd sa mise";
+        };
+        String unit = plugin.getConfigManager().getString(
+            "logs.bets.units." + drink.getCurrency().name().toLowerCase(Locale.ROOT),
+            drink.getCurrency() == CurrencyType.EXP ? "EXP" : "SHCoins");
+        String line = plugin.getConfigManager().getString("logs.bets." + key, fallback)
+            .replace("%player%", player.getName())
+            .replace("%drink%", ColorUtils.stripColor(drink.getName()))
+            .replace("%drink_id%", drink.getId())
+            .replace("%bar%", drink.getBarId())
+            .replace("%price%", NumberUtils.format(drink.getPrice()))
+            .replace("%payout%", NumberUtils.format(payout))
+            .replace("%unit%", unit);
+        ActionLog.write(plugin, plugin.getConfigManager().getString("logs.bets.file", "paris"), line);
     }
 
     // --- Verifications ---
